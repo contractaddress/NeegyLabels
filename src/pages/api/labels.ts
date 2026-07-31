@@ -3,9 +3,8 @@ import {
   lookupLabels,
   insertLabel,
   deleteLabel,
-  getDistinctChains,
-  getRecentLabels,
 } from '../../lib/db.ts';
+import { getLabelCount } from '../../lib/db.ts';
 import { verifyToken } from '../../lib/tokens.ts';
 
 function checkAuth(request: Request): boolean {
@@ -26,15 +25,6 @@ export const GET: APIRoute = async ({ request, url }) => {
   const offset = parseInt(url.searchParams.get('offset') ?? '0', 10);
 
   try {
-    if (!address && !chain && !type) {
-      const labels = getRecentLabels(limit);
-      const chains = getDistinctChains();
-      return new Response(JSON.stringify({ labels, chains, total: labels.length }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
     const labels = lookupLabels({
       address: address ?? undefined,
       chain: chain ?? undefined,
@@ -43,7 +33,11 @@ export const GET: APIRoute = async ({ request, url }) => {
       offset,
     });
 
-    return new Response(JSON.stringify({ labels, total: labels.length }), {
+    const total = address || chain || type
+      ? labels.length
+      : getLabelCount();
+
+    return new Response(JSON.stringify({ labels, total }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

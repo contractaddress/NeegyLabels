@@ -79,7 +79,7 @@ export function lookupLabels(params: {
     ? `WHERE ${conditions.join(' AND ')}`
     : '';
 
-  const limit = Math.min(params.limit ?? 50, 10000);
+  const limit = Math.min(params.limit ?? 50, 50000);
   const offset = params.offset ?? 0;
 
   const stmt = d.prepare(
@@ -147,6 +147,12 @@ export function getChainCounts(): { chain: string; count: number }[] {
 
 export function getRecentLabels(limit = 20): Label[] {
   return lookupLabels({ limit });
+}
+
+export function getLabelCount(): number {
+  const d = getDb();
+  const row = d.prepare('SELECT COUNT(*) as count FROM labels').get() as { count: number };
+  return row.count;
 }
 
 export function getTypeCounts(): { type: string; count: number }[] {
