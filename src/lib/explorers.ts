@@ -7,7 +7,7 @@ const EXPLORERS: Record<string, string> = {
   polygon: 'https://polygonscan.com/address/',
   avalanche: 'https://snowtrace.io/address/',
   unichain: 'https://uniscan.xyz/address/',
-  robinhood: 'https://robinhood.blockscout.com/address/',
+  robinhood: 'https://robinhoodchain.blockscout.com/address/',
 };
 
 export function explorerUrl(chain: string, address: string): string | null {
