@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import { lookupLabels } from '../lib/db.ts';
+import { explorerUrl } from '../lib/explorers.ts';
+
+const url = new URL(Astro.request.url);
+const query = url.searchParams.get('label')?.trim() ?? '';
+const results = query ? lookupLabels({ label: query, limit: 500 }) : [];
+---
+
+<Base title={`Search "${query}"`}>
+  <h1>/search</h1>
+
+  <form action="/search" method="GET" class="search-bar" style="max-width:500px;">
+    <input
+      type="text"
+      name="label"
+      placeholder="label name..."
+      value={query}
+      autocomplete="off"
+      style="flex:1;"
+    />
+    <button type="submit">find</button>
+  </form>
+
+  {query && (
+    <>
+      <div class="section-header">
+        <h2>label: <strong style="color:var(--accent);">{query}</strong></h2>
+        <span class="text-muted">{results.length} {results.length === 1 ? 'result' : 'results'}</span>
+      </div>
+
+      {results.length === 0 ? (
+        <div class="empty-state"><p>no labels matching <strong>{query}</strong></p></div>
+      ) : (
+        <table>
+          <thead>
+            <tr><th>Address</th><th>Chain</th><th>Label</th><th>Type</th><th>Conf</th><th>Added</th></tr>
+          </thead>
+          <tbody>
+            {results.map((l) => (
+              <tr>
+                <td class="address-cell">
+                  <span class="address-mono">
+                    <a href={`/?address=${l.address}`}>
+                      <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
+                    </a>
+                  </span>
+                </td>
+                <td>
+                  {(() => {
+                    const exUrl = explorerUrl(l.chain, l.address);
+                    return exUrl ? (
+                      <a href={exUrl} target="_blank" rel="noopener" class="badge" data-chain={l.chain} style="text-decoration:none;">{l.chain}</a>
+                    ) : (
+                      <span class="badge" data-chain={l.chain}>{l.chain}</span>
+                    );
+                  })()}
+                </td>
+                <td><strong>{l.label}</strong></td>
+                <td><a href={`/type/${l.type}`} class="badge" data-type={l.type} style="text-decoration:none;">{l.type}</a></td>
+                <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
+                <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  )}
+</Base>

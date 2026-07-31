@@ -1,11 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel, getTypeCounts, lookupLabels } from '../lib/db.ts';
+import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel, getTypeCounts } from '../lib/db.ts';
 import { explorerUrl } from '../lib/explorers.ts';
 
 const url = new URL(Astro.request.url);
 const searchAddr = url.searchParams.get('address')?.trim() ?? null;
-const searchLabel = url.searchParams.get('label')?.trim() ?? null;
 
 if (Astro.request.method === 'POST') {
   const data = await Astro.request.formData();
@@ -17,11 +16,7 @@ if (Astro.request.method === 'POST') {
   return Astro.redirect(`/?address=${encodeURIComponent(delAddr ?? '')}`);
 }
 
-const searchResults = searchAddr
-  ? lookupByAddress(searchAddr)
-  : searchLabel
-    ? lookupLabels({ label: searchLabel, limit: 500 })
-    : null;
+const searchResults = searchAddr ? lookupByAddress(searchAddr) : null;
 const labels = getRecentLabels(20);
 const chainCounts = getChainCounts();
 const typeCounts = getTypeCounts();
@@ -33,7 +28,7 @@ const typeCounts = getTypeCounts();
     On-chain label database for EVM addresses. <strong>{chainCounts.length} chains</strong> indexed.
   </p>
 
-  <form action="/" method="GET" class="search-bar" style="max-width:500px;">
+  <form action="/" method="GET" class="search-bar" style="max-width:600px;">
     <input
       type="text"
       name="address"
@@ -45,13 +40,12 @@ const typeCounts = getTypeCounts();
     <button type="submit">resolve</button>
   </form>
 
-  <form action="/" method="GET" class="search-bar" style="max-width:200px;">
+  <form action="/search" method="GET" class="search-bar" style="max-width:200px;">
     <input
       type="text"
       name="label"
-      placeholder="label search..."
-      value={searchLabel ?? ''}
-      autocomplete="off"
+        placeholder="label search..."
+        autocomplete="off"
       style="font-size:0.88rem;padding:0.45rem 0.7rem;"
     />
     <button type="submit" style="font-size:0.88rem;padding:0.45rem 0.9rem;">find</button>
@@ -60,13 +54,7 @@ const typeCounts = getTypeCounts();
   {searchResults !== null && (
     <>
       <div class="section-header">
-        <h2>
-          {searchAddr ? (
-            <span class="address-mono">{searchAddr}</span>
-          ) : searchLabel ? (
-            <span>label: <strong style="color:var(--accent);">{searchLabel}</strong></span>
-          ) : null}
-        </h2>
+        <h2><span class="address-mono">{searchAddr}</span></h2>
         <span class="text-muted">{searchResults.length} {searchResults.length === 1 ? 'label' : 'labels'}</span>
       </div>
       {searchResults.length === 0 ? (
