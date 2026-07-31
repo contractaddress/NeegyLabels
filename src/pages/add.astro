@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import { insertLabel, getDistinctChains, getDistinctTypes } from '../lib/db.ts';
+
+const chains = getDistinctChains();
+const types = getDistinctTypes();
+
+let flash: { type: 'success' | 'error'; message: string } | null = null;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const address = formData.get('address')?.toString()?.trim();
+    const chain = formData.get('chain')?.toString()?.trim();
+    const label = formData.get('label')?.toString()?.trim();
+    const type = formData.get('type')?.toString()?.trim();
+    const source = formData.get('source')?.toString()?.trim();
+
+    if (!address || !chain || !label) {
+      flash = { type: 'error', message: 'address, chain, and label are required' };
+    } else {
+      insertLabel({
+        address,
+        chain,
+        label,
+        type: type || undefined,
+        source: source || undefined,
+      });
+      flash = { type: 'success', message: `label added for ${address.slice(0, 10)}... on ${chain}` };
+    }
+  } catch (e) {
+    flash = { type: 'error', message: String(e) };
+  }
+}
+---
+
+<Base title="Add Label">
+  <h1>add_label</h1>
+
+  {flash && (
+    <div class={`flash ${flash.type}`}>
+      {flash.type === 'success' ? '[ok] ' : '[err] '}{flash.message}
+    </div>
+  )}
+
+  <form method="POST">
+    <div class="form-group">
+      <label for="address">address *</label>
+      <input
+        type="text"
+        id="address"
+        name="address"
+        placeholder="0xd29c85f15df544ba632c9e25829fd29d767d7978"
+        required
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label for="chain">chain *</label>
+        <input
+          type="text"
+          id="chain"
+          name="chain"
+          list="chains-list"
+          placeholder="ethereum, base, * ..."
+          required
+          autocomplete="off"
+        />
+        <datalist id="chains-list">
+          {chains.map((c) => <option value={c} />)}
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label for="type">type</label>
+        <input
+          type="text"
+          id="type"
+          name="type"
+          list="types-list"
+          placeholder="factory, wallet, cex..."
+          autocomplete="off"
+        />
+        <datalist id="types-list">
+          {types.map((t) => <option value={t} />)}
+        </datalist>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="label">label name *</label>
+      <input
+        type="text"
+        id="label"
+        name="label"
+        placeholder="Uniswap V3 Factory"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="source">source</label>
+      <input
+        type="text"
+        id="source"
+        name="source"
+        value="manual"
+        placeholder="manual, json, explorer"
+      />
+    </div>
+
+    <button type="submit">insert_label()</button>
+  </form>
+</Base>

@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import { lookupLabels, getDistinctChains, lookupByAddress } from '../lib/db.ts';
+
+const url = new URL(Astro.request.url);
+const address = url.searchParams.get('address')?.trim();
+const chain = url.searchParams.get('chain')?.trim();
+
+let results = null;
+let error = null;
+
+if (address || chain) {
+  try {
+    if (address) {
+      results = lookupByAddress(address);
+    } else if (chain) {
+      results = lookupLabels({ chain });
+    }
+  } catch (e) {
+    error = String(e);
+  }
+}
+
+const chains = getDistinctChains();
+---
+
+<Base title={address ? `Lookup ${address.slice(0, 10)}...` : 'Lookup'}>
+  <h1>lookup</h1>
+
+  <form action="/lookup" method="GET" class="search-bar">
+    <input
+      type="text"
+      name="address"
+      placeholder="0x..."
+      value={address ?? ''}
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <button type="submit">resolve</button>
+  </form>
+
+  {error && (
+    <div class="flash error">error: {error}</div>
+  )}
+
+  {results !== null && (
+    <>
+      <div class="section-header">
+        <h2>
+          {address ? (
+            <span class="address-mono">{address}</span>
+          ) : chain ? (
+            <span>chain: <span class="badge" data-chain={chain}>{chain}</span></span>
+          ) : null}
+        </h2>
+        <span class="text-muted">{results.length} {results.length === 1 ? 'label' : 'labels'}</span>
+      </div>
+
+      {results.length === 0 ? (
+        <div class="empty-state">
+          <p>no labels found</p>
+          {address && <p><a href="/add" class="btn">add label →</a></p>}
+        </div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Chain</th>
+              <th>Label</th>
+              <th>Type</th>
+              <th>Source</th>
+              <th>Added</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((l) => (
+              <tr>
+                <td>
+                  <span class="badge" data-chain={l.chain}>{l.chain}</span>
+                </td>
+                <td><strong>{l.label}</strong></td>
+                <td><span class="badge" data-type={l.type}>{l.type}</span></td>
+                <td class="text-muted">{l.source}</td>
+                <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  )}
+
+  {!address && !chain && !results && (
+    <div class="empty-state">
+      <p>enter an address to resolve labels</p>
+    </div>
+  )}
+</Base>

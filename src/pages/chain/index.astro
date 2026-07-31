@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getChainCounts } from '../../lib/db.ts';
+
+const chainCounts = getChainCounts();
+---
+
+<Base title="Chains">
+  <h1>chains</h1>
+
+  <div class="grid-2">
+    {chainCounts.map(({ chain, count }) => (
+      <a href={`/chain/${chain}`} class="chain-chip" data-chain={chain}>
+        <span class="mono">
+          {chain === '*' ? (
+            <span class="badge" data-chain="*">*</span>
+          ) : null}
+          {' '}{chain}
+        </span>
+        <span class="count">{count}</span>
+      </a>
+    ))}
+  </div>
+</Base>

@@ -1,17 +1,99 @@
 ---
+import Base from '../layouts/Base.astro';
+import { getRecentLabels, getChainCounts, getDistinctChains } from '../lib/db.ts';
 
+const labels = getRecentLabels(20);
+const chainCounts = getChainCounts();
+const chains = getDistinctChains();
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="Home">
+  <section>
+    <h1>root</h1>
+    <p class="text-muted gap-top">
+      On-chain label database for EVM addresses. <strong>{chains.length} chains</strong> indexed.
+    </p>
+  </section>
+
+  <section>
+    <form action="/lookup" method="GET" class="search-bar">
+      <input
+        type="text"
+        name="address"
+        placeholder="0x..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit">resolve</button>
+    </form>
+  </section>
+
+  <section>
+    <div class="section">
+      <div class="section-header">
+        <h2>chains</h2>
+        <span class="text-muted">{chainCounts.length} total</span>
+      </div>
+      <div class="grid-2">
+        {chainCounts.map(({ chain, count }) => (
+          <a href={`/chain/${chain}`} class="chain-chip" data-chain={chain}>
+            <span class="mono">
+              {chain === '*' ? (
+                <span class="badge" data-chain="*">*</span>
+              ) : null}
+              {' '}{chain}
+            </span>
+            <span class="count">{count}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <h2>recent_labels</h2>
+      <a href="/lookup" class="text-muted">view all →</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Address</th>
+          <th>Chain</th>
+          <th>Label</th>
+          <th>Type</th>
+          <th>Added</th>
+        </tr>
+      </thead>
+      <tbody>
+        {labels.length === 0 ? (
+          <tr>
+            <td colspan="5" class="empty-state">
+              <p>no labels in database</p>
+            </td>
+          </tr>
+        ) : (
+          labels.map((l) => (
+            <tr>
+              <td class="address-cell">
+                <span class="address-mono">
+                  <a href={`/lookup?address=${l.address}`}>
+                    <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
+                  </a>
+                </span>
+              </td>
+              <td>
+                <span class="badge" data-chain={l.chain}>{l.chain}</span>
+              </td>
+              <td>{l.label}</td>
+              <td>
+                <span class="badge" data-type={l.type}>{l.type}</span>
+              </td>
+              <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </section>
+</Base>

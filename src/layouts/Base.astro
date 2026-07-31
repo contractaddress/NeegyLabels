@@ -1,0 +1,552 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} — NeegyLabels</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='24' font-size='24'>NL</text></svg>" />
+  </head>
+  <body>
+    <header>
+      <a href="/" class="logo">
+        <span class="prompt">~</span><span class="slash">/</span>neegy<span class="caret">_</span>
+      </a>
+      <nav>
+        <a href="/lookup">/lookup</a>
+        <a href="/add">/add</a>
+        <a href="/chain">/chain</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  @font-face {
+    font-family: 'Mononoki Nerd Font';
+    src: local('Mononoki Nerd Font Mono'), local('mononoki Nerd Font Mono');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg-elevated: #111111;
+    --bg-hover: #1a1a1a;
+    --border: #252525;
+    --border-active: #3a3a3a;
+    --text: #b8b8b8;
+    --text-muted: #5c5c5c;
+    --text-bright: #e0e0e0;
+    --accent: #50fa7b;
+    --accent-dim: #28753e;
+    --accent2: #ff79c6;
+    --accent3: #8be9fd;
+    --warn: #f1fa8c;
+    --danger: #ff5555;
+    --chain-ethereum: #627eea;
+    --chain-robinhood: #00c805;
+    --chain-base: #0052ff;
+    --chain-bsc: #f0b90b;
+    --chain-arbitrum: #28a0f0;
+    --chain-optimism: #ff0420;
+    --chain-polygon: #8247e5;
+    --chain-avalanche: #e84142;
+    --chain-unichain: #ff007a;
+    --type-factory: #ff79c6;
+    --type-wallet: #50fa7b;
+    --type-cex: #f1fa8c;
+    --type-bridge: #8be9fd;
+    --type-mixer: #ff5555;
+    --type-launcher: #bd93f9;
+    --type-other: #6272a4;
+    --type-unknown: #5c5c5c;
+    --font: 'Mononoki Nerd Font', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    --font-size: 15px;
+    --line-height: 1.6;
+    --radius: 0px;
+    --gap: 1rem;
+  }
+
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: var(--font-size);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: var(--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(80, 250, 123, 0.02) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(139, 233, 253, 0.02) 0%, transparent 50%),
+      var(--bg);
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-elevated);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(12px);
+  }
+
+  nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  nav a,
+  .logo {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.15s;
+    letter-spacing: 0.02em;
+  }
+
+  nav a:hover,
+  nav a[aria-current="page"],
+  .logo:hover {
+    color: var(--accent);
+  }
+
+  .logo {
+    color: var(--text-bright);
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .logo .prompt {
+    color: var(--accent);
+  }
+
+  .logo .slash {
+    color: var(--accent2);
+  }
+
+  .logo .caret {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+    font-weight: 400;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: var(--text-bright);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    position: relative;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h1::before {
+    content: '# ';
+    color: var(--accent-dim);
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    color: var(--text-bright);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  h2::before {
+    content: '> ';
+    color: var(--accent-dim);
+  }
+
+  a {
+    color: var(--accent3);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  thead th {
+    text-align: left;
+    padding: 0.7rem 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border-active);
+    background: var(--bg-elevated);
+  }
+
+  tbody td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:hover {
+    background: var(--bg-hover);
+  }
+
+  /* Forms */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  label {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  input,
+  select,
+  textarea {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 0.8rem;
+    font-family: var(--font);
+    font-size: 0.92rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--accent-dim);
+    box-shadow: 0 0 0 1px var(--accent-dim);
+  }
+
+  input::placeholder {
+    color: var(--text-muted);
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  select option {
+    background: var(--bg-elevated);
+    color: var(--text);
+  }
+
+  button,
+  .btn {
+    background: var(--bg-elevated);
+    border: 1px solid var(--accent-dim);
+    color: var(--accent);
+    padding: 0.6rem 1.2rem;
+    font-family: var(--font);
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  button:hover,
+  .btn:hover {
+    background: var(--accent-dim);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+
+  button.danger {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  button.danger:hover {
+    background: var(--danger);
+    color: var(--bg);
+  }
+
+  /* Search */
+  .search-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .search-bar input {
+    flex: 1;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border-color: var(--border-active);
+  }
+
+  .search-bar input:focus {
+    border-color: var(--accent-dim);
+  }
+
+  .search-bar button {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 0.18rem 0.6rem;
+    font-size: 0.78rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  /* Chain badges */
+  .badge[data-chain="ethereum"]   { border-color: var(--chain-ethereum);   color: var(--chain-ethereum); }
+  .badge[data-chain="robinhood"]  { border-color: var(--chain-robinhood);  color: var(--chain-robinhood); }
+  .badge[data-chain="base"]       { border-color: var(--chain-base);       color: var(--chain-base); }
+  .badge[data-chain="bsc"]        { border-color: var(--chain-bsc);        color: var(--chain-bsc); }
+  .badge[data-chain="arbitrum"]   { border-color: var(--chain-arbitrum);   color: var(--chain-arbitrum); }
+  .badge[data-chain="optimism"]   { border-color: var(--chain-optimism);   color: var(--chain-optimism); }
+  .badge[data-chain="polygon"]    { border-color: var(--chain-polygon);    color: var(--chain-polygon); }
+  .badge[data-chain="avalanche"]  { border-color: var(--chain-avalanche);  color: var(--chain-avalanche); }
+  .badge[data-chain="unichain"]   { border-color: var(--chain-unichain);   color: var(--chain-unichain); }
+  .badge[data-chain="*"]          { border-color: var(--warn);              color: var(--warn); }
+
+  /* Type badges */
+  .badge[data-type="factory"]   { border-color: var(--type-factory);   color: var(--type-factory); }
+  .badge[data-type="wallet"]    { border-color: var(--type-wallet);    color: var(--type-wallet); }
+  .badge[data-type="cex"]       { border-color: var(--type-cex);       color: var(--type-cex); }
+  .badge[data-type="bridge"]    { border-color: var(--type-bridge);    color: var(--type-bridge); }
+  .badge[data-type="mixer"]     { border-color: var(--type-mixer);     color: var(--type-mixer); }
+  .badge[data-type="launcher"]  { border-color: var(--type-launcher);  color: var(--type-launcher); }
+  .badge[data-type="other"]     { border-color: var(--type-other);     color: var(--type-other); }
+  .badge[data-type="unknown"]   { border-color: var(--type-unknown);   color: var(--type-unknown); }
+
+  /* Address display */
+  .address-mono {
+    font-family: var(--font);
+    color: var(--accent3);
+    word-break: break-all;
+  }
+
+  .address-mono a {
+    color: inherit;
+  }
+
+  .address-mono a:hover {
+    color: var(--accent);
+  }
+
+  /* Monospace address clipping */
+  .addr-prefix {
+    color: var(--text);
+  }
+
+  .addr-suffix {
+    color: var(--text-muted);
+  }
+
+  /* No results */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state p {
+    margin-top: 0.5rem;
+  }
+
+  /* Flash messages */
+  .flash {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .flash.success {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .flash.error {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* Form */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 560px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  /* Section card */
+  .section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .chain-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--border);
+    color: var(--accent3);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: all 0.15s;
+  }
+
+  .chain-chip:hover {
+    border-color: var(--accent3);
+    background: rgba(139, 233, 253, 0.05);
+  }
+
+  .chain-chip[data-chain="ethereum"]  { color: var(--chain-ethereum); }
+  .chain-chip[data-chain="robinhood"] { color: var(--chain-robinhood); }
+  .chain-chip[data-chain="base"]      { color: var(--chain-base); }
+  .chain-chip[data-chain="bsc"]       { color: var(--chain-bsc); }
+  .chain-chip[data-chain="arbitrum"]  { color: var(--chain-arbitrum); }
+  .chain-chip[data-chain="optimism"]  { color: var(--chain-optimism); }
+  .chain-chip[data-chain="polygon"]   { color: var(--chain-polygon); }
+  .chain-chip[data-chain="avalanche"] { color: var(--chain-avalanche); }
+  .chain-chip[data-chain="unichain"]  { color: var(--chain-unichain); }
+
+  .chain-chip:hover {
+    border-color: currentColor;
+    background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  .chain-chip .count {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+
+  .mono {
+    font-family: var(--font);
+  }
+
+  .text-muted {
+    color: var(--text-muted);
+  }
+
+  .address-cell {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .gap-top {
+    margin-top: var(--gap);
+  }
+
+  .inline-flex {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  ::selection {
+    background: var(--accent-dim);
+    color: var(--bg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-active);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+  }
+</style>
