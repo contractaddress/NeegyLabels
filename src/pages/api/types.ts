@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 const TYPES = [
   'factory', 'wallet', 'dex', 'token', 'locker',
   'router', 'proxy', 'governance', 'oracle', 'multisig',
-  'lending', 'staking', 'positions', 'cex', 'bridge', 'mixer', 'launcher',
+  'lending', 'staking', 'positions', 'multicall', 'lens', 'hook', 'cex', 'bridge', 'mixer', 'launcher',
   'other', 'unknown',
 ];
 
