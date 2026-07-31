@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import { insertLabel, getDistinctChains } from '../lib/db.ts';
 
 const chains = getDistinctChains();
-const types = ['factory', 'wallet', 'dex', 'token', 'locker', 'router', 'proxy', 'governance', 'oracle', 'multisig', 'lending', 'staking', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
+const types = ['factory', 'wallet', 'dex', 'token', 'locker', 'router', 'proxy', 'governance', 'oracle', 'multisig', 'lending', 'staking', 'positions', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
 
 let flash: { type: 'success' | 'error'; message: string } | null = null;
 

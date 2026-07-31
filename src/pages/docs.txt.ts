@@ -57,7 +57,7 @@ Body (JSON):
 | address | yes | Lowercase 0x address |
 | chain | yes | Chain key or * for cross-chain |
 | label | yes | Human-readable name |
-| type | no | factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, cex, bridge, mixer, launcher, other |
+| type | no | factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, cex, bridge, mixer, launcher, other |
 | source | no | Default: manual |
 
 Response (201): { "label": { ... } }
@@ -84,7 +84,7 @@ ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain *
 
 ## Types
 
-factory wallet dex token locker router proxy governance oracle multisig lending staking cex bridge mixer launcher other unknown
+factory wallet dex token locker router proxy governance oracle multisig lending staking positions cex bridge mixer launcher other unknown
 `, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
