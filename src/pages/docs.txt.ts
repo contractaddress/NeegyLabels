@@ -77,6 +77,24 @@ Delete a label. Requires auth.
 Response (200): { "success": true }
 Response (404): { "error": "Label not found" }
 
+### PUT /api/labels
+
+Update a label. Requires auth.
+
+  PUT /api/labels?address=0x...&chain=ethereum
+  Content-Type: application/json
+  Authorization: Bearer n33gy...
+
+Body (JSON — all fields optional):
+  {
+    "label": "Updated Name",
+    "type": "dex",
+    "confidence": 95
+  }
+
+Response (200): { "success": true }
+Response (404): { "error": "Label not found" }
+
 ## Errors
 
 400: Missing required fields
