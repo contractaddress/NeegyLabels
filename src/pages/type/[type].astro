@@ -1,15 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { lookupLabels } from '../../lib/db.ts';
-
-export function getStaticPaths() {
-  const types = ['factory','wallet','dex','token','locker','router','proxy','governance','oracle','multisig','lending','staking','positions','cex','bridge','mixer','launcher','other','unknown'];
-  return types.map((type) => ({ params: { type } }));
-}
+import { lookupLabels, getDistinctChains } from '../../lib/db.ts';
 
 const { type } = Astro.params;
-const labels = lookupLabels({ limit: 200 });
+const labels = lookupLabels({ limit: 10000 });
 const filtered = labels.filter((l) => l.type === type);
+
+const chains = getDistinctChains();
 ---
 
 <Base title={`Type / ${type}`}>
