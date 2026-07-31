@@ -7,7 +7,7 @@ import {
   deleteToken,
 } from './db.ts';
 
-const TOKEN_PREFIX = 'nl_';
+const TOKEN_PREFIX = 'n33gy';
 
 export function createToken(name: string): { token: string; id: string } {
   const id = randomBytes(8).toString('hex');

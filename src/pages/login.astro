@@ -1,0 +1,77 @@
+---
+import Base from '../layouts/Base.astro';
+import { authenticate, setupUser, hasUsers } from '../lib/auth.ts';
+import { createHmac } from 'node:crypto';
+
+const SESSION_SECRET = import.meta.env.API_KEY ?? 'dev-secret-change-me';
+
+function signSession(username: string): string {
+  const ts = Date.now().toString();
+  const payload = `${username}:${ts}`;
+  const sig = createHmac('sha256', SESSION_SECRET).update(payload).digest('hex');
+  return `${payload}:${sig}`;
+}
+
+const existingUsers = hasUsers();
+
+let error: string | null = null;
+let sessionUsername: string | null = null;
+
+if (Astro.request.method === 'POST') {
+  const data = await Astro.request.formData();
+  const username = data.get('username')?.toString()?.trim();
+  const password = data.get('password')?.toString();
+
+  if (!username || !password) {
+    error = 'Username and password required';
+  } else if (!existingUsers) {
+    try {
+      setupUser(username, password);
+      sessionUsername = username;
+    } catch (e) {
+      error = String(e);
+    }
+  } else if (authenticate(username, password)) {
+    sessionUsername = username;
+  } else {
+    error = 'Invalid credentials';
+  }
+}
+
+if (sessionUsername) {
+  const session = signSession(sessionUsername);
+  Astro.cookies.set('nl_session', session, {
+    httpOnly: true,
+    secure: import.meta.env.PROD,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 24 * 60 * 60,
+  });
+}
+---
+
+<Base title={existingUsers ? 'Login' : 'Setup'} requireAuth={false}>
+  {sessionUsername ? (
+    <meta http-equiv="refresh" content="0;url=/" />
+  ) : null}
+
+  <h1>{existingUsers ? '_login' : '_setup'}</h1>
+
+  {error && <div class="flash error">[err] {error}</div>}
+
+  {existingUsers ? null : (
+    <p class="text-muted" style="margin-bottom:1rem;">Create the admin account. This will only work once.</p>
+  )}
+
+  <form method="POST">
+    <div class="form-group">
+      <label for="username">username</label>
+      <input type="text" id="username" name="username" required autocomplete="off" spellcheck="false" />
+    </div>
+    <div class="form-group">
+      <label for="password">password</label>
+      <input type="password" id="password" name="password" required />
+    </div>
+    <button type="submit">{existingUsers ? 'login()' : 'create_account()'}</button>
+  </form>
+</Base>
