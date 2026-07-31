@@ -43,6 +43,9 @@ const { title, description, requireAuth = true } = Astro.props;
             btn.textContent = isEditing ? 'done' : '✎ edit';
 
             chips.forEach(chip => {
+              const countEl = chip.querySelector('.count');
+              if (countEl) countEl.style.display = isEditing ? 'none' : '';
+
               if (hidden.has(chip.dataset.chain || '')) return;
 
               if (isEditing) {
@@ -67,6 +70,8 @@ const { title, description, requireAuth = true } = Astro.props;
               } else {
                 const existing = chip.querySelector('.chain-hide-btn');
                 if (existing) existing.remove();
+                const countEl = chip.querySelector('.count');
+                if (countEl) countEl.style.display = '';
               }
             });
 
@@ -81,6 +86,8 @@ const { title, description, requireAuth = true } = Astro.props;
             chip.style.display = '';
             const btn = chip.querySelector('.chain-hide-btn');
             if (btn) btn.remove();
+            const countEl = chip.querySelector('.count');
+            if (countEl) countEl.style.display = '';
           });
           const panel = document.getElementById('hidden-panel');
           if (panel) panel.style.display = 'none';
