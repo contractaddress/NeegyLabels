@@ -139,6 +139,13 @@ export function getRecentLabels(limit = 20): Label[] {
   return lookupLabels({ limit });
 }
 
+export function getTypeCounts(): { type: string; count: number }[] {
+  const d = getDb();
+  return d.prepare(
+    'SELECT type, COUNT(*) as count FROM labels GROUP BY type ORDER BY count DESC',
+  ).all() as { type: string; count: number }[];
+}
+
 // ── API tokens ──────────────────────────────────────────────
 
 export interface ApiToken {

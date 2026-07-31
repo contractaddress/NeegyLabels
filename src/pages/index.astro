@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel } from '../lib/db.ts';
+import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel, getTypeCounts } from '../lib/db.ts';
 import { explorerUrl } from '../lib/explorers.ts';
 
 const url = new URL(Astro.request.url);
@@ -19,6 +19,7 @@ if (Astro.request.method === 'POST') {
 const searchResults = searchAddr ? lookupByAddress(searchAddr) : null;
 const labels = getRecentLabels(20);
 const chainCounts = getChainCounts();
+const typeCounts = getTypeCounts();
 ---
 
 <Base title="Home">
@@ -111,6 +112,23 @@ const chainCounts = getChainCounts();
       <div id="hidden-panel" style="display:none;margin-top:0.5rem;font-size:0.8rem;">
         <span class="text-muted"><span id="hidden-count">0</span> chains hidden — </span>
         <a href="#" id="show-all-btn" style="color:var(--accent);">show all</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section">
+      <div class="section-header">
+        <h2>types</h2>
+        <span class="text-muted">{typeCounts.length} total</span>
+      </div>
+      <div class="grid-2">
+        {typeCounts.map(({ type, count }) => (
+          <a href={`/type/${type}`} class="chain-chip">
+            <span class="badge" data-type={type} style="border:none;font-size:0.82rem;">{type}</span>
+            <span class="count">{count}</span>
+          </a>
+        ))}
       </div>
     </div>
   </section>
