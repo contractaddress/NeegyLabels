@@ -1,10 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import { createToken, revokeToken, listTokens } from '../lib/tokens.ts';
+import { insertLabel } from '../lib/db.ts';
+import Database from 'better-sqlite3';
+import { unlink, writeFile } from 'node:fs/promises';
+import { randomBytes } from 'node:crypto';
 
 let result: { token?: string; id?: string } | null = null;
 let error: string | null = null;
 let revoked: string | null = null;
+let imported = 0;
 
 if (Astro.request.method === 'POST') {
   try {
@@ -24,6 +29,25 @@ if (Astro.request.method === 'POST') {
         revokeToken(id);
         revoked = id;
       }
+    } else if (action === 'import') {
+      const file = data.get('dbfile') as File | null;
+      if (!file || !file.name.endsWith('.db')) {
+        error = 'Please upload a .db SQLite file';
+      } else {
+        const tmpPath = `/tmp/neegy_import_${randomBytes(4).toString('hex')}.db`;
+        const buf = Buffer.from(await file.arrayBuffer());
+        await writeFile(tmpPath, buf);
+        const tmpDb = new Database(tmpPath);
+        const rows = tmpDb.prepare('SELECT * FROM labels').all() as {
+          address: string; chain: string; label: string; type: string; source: string;
+        }[];
+        for (const row of rows) {
+          insertLabel(row);
+          imported++;
+        }
+        tmpDb.close();
+        await unlink(tmpPath);
+      }
     }
   } catch (e) {
     error = String(e);
@@ -38,6 +62,7 @@ const tokens = listTokens();
 
   {error && <div class="flash error">[err] {error}</div>}
   {revoked && <div class="flash success">[ok] token revoked</div>}
+  {imported > 0 && <div class="flash success">[ok] imported {imported} labels</div>}
 
   {result ? (
     <div id="token-reveal" class="section" style="border-color: var(--accent-dim);">
@@ -50,6 +75,20 @@ const tokens = listTokens();
       <p class="text-muted gap-top" style="font-size:0.78rem;">ID: {result.id} &nbsp;|&nbsp; token is not stored — only its SHA-256 hash is saved.</p>
     </div>
   ) : null}
+
+  <div class="section">
+    <div class="section-header">
+      <h2>import_db</h2>
+    </div>
+    <p class="text-muted" style="margin-bottom:0.75rem;">Upload a <code>labels.db</code> file — labels will be merged (duplicates skipped).</p>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="action" value="import" />
+      <div class="search-bar">
+        <input type="file" name="dbfile" accept=".db" required />
+        <button type="submit">import()</button>
+      </div>
+    </form>
+  </div>
 
   <div class="section">
     <div class="section-header">
