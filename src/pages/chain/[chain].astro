@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { lookupLabels, getDistinctChains, getChainCounts } from '../../lib/db.ts';
+import { explorerUrl } from '../../lib/explorers.ts';
 
 export function getStaticPaths() {
   const chains = getDistinctChains();
