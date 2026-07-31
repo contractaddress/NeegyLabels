@@ -85,12 +85,14 @@ const typeCounts = getTypeCounts();
                 <td class="text-muted">{l.source}</td>
                 <td class="text-muted">{l.added_at.slice(0, 10)}</td>
                 <td>
-                  <form method="POST" style="display:inline;max-width:none;" onsubmit="return confirm('Delete this label?')">
-                    <input type="hidden" name="del_address" value={l.address} />
-                    <input type="hidden" name="del_chain" value={l.chain} />
-                    <button class="danger" style="padding:0.15rem 0.45rem;font-size:0.7rem;" title="delete">x</button>
-                  </form>
-                  <a href={`/add?address=${l.address}&chain=${l.chain}`} style="color:var(--accent3);font-size:0.85rem;margin-left:0.5rem;text-decoration:none;" title="edit">✎</a>
+                  <div style="display:flex;align-items:center;gap:0.6rem;">
+                    <form method="POST" style="display:inline;max-width:none;" onsubmit="return confirm('Delete this label?')">
+                      <input type="hidden" name="del_address" value={l.address} />
+                      <input type="hidden" name="del_chain" value={l.chain} />
+                      <button class="danger" style="padding:0.2rem 0.5rem;font-size:0.8rem;" title="delete">x</button>
+                    </form>
+                    <a href={`/add?address=${l.address}&chain=${l.chain}`} style="color:var(--accent3);font-size:0.9rem;text-decoration:none;" title="edit">✎</a>
+                  </div>
                 </td>
               </tr>
             ))}
