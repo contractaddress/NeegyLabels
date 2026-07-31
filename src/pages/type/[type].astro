@@ -1,11 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { lookupLabels, getDistinctChains } from '../../lib/db.ts';
+import { lookupLabels } from '../../lib/db.ts';
 
 const { type } = Astro.params;
 const labels = lookupLabels({ type, limit: 10000 });
-
-const chains = getDistinctChains();
 ---
 
 <Base title={`Type / ${type}`}>
