@@ -68,7 +68,7 @@ const chainCounts = getChainCounts();
                   );
                 })()}
                 <td><strong>{l.label}</strong></td>
-                <td><span class="badge" data-type={l.type}>{l.type}</span></td>
+                <td><a href={`/type/${l.type}`} class="badge" data-type={l.type} style="text-decoration:none;">{l.type}</a></td>
                 <td class="text-muted">{l.source}</td>
                 <td class="text-muted">{l.added_at.slice(0, 10)}</td>
                 <td>
@@ -138,7 +138,7 @@ const chainCounts = getChainCounts();
               </td>
               <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
               <td>{l.label}</td>
-              <td><span class="badge" data-type={l.type}>{l.type}</span></td>
+              <td><a href={`/type/${l.type}`} class="badge" data-type={l.type} style="text-decoration:none;">{l.type}</a></td>
               <td class="text-muted">{l.added_at.slice(0, 10)}</td>
             </tr>
           ))

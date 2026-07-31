@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import { lookupLabels } from '../../lib/db.ts';
+
+export function getStaticPaths() {
+  const types = ['factory', 'wallet', 'dex', 'token', 'locker', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
+  return types.map((type) => ({ params: { type } }));
+}
+
+const { type } = Astro.params;
+const labels = lookupLabels({ limit: 200 });
+const filtered = labels.filter((l) => l.type === type);
+---
+
+<Base title={`Type / ${type}`}>
+  <h1>/type/<span class="badge" data-type={type}>{type}</span></h1>
+
+  <div class="section-header">
+    <span class="text-muted">{filtered.length} {filtered.length === 1 ? 'label' : 'labels'}</span>
+  </div>
+
+  {filtered.length === 0 ? (
+    <div class="empty-state"><p>no labels of type <strong>{type}</strong></p></div>
+  ) : (
+    <table>
+      <thead>
+        <tr><th>Address</th><th>Chain</th><th>Label</th><th>Source</th><th>Added</th></tr>
+      </thead>
+      <tbody>
+        {filtered.map((l) => (
+          <tr>
+            <td class="address-cell">
+              <span class="address-mono">
+                <a href={`/?address=${l.address}`}>
+                  <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
+                </a>
+              </span>
+            </td>
+            <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
+            <td>{l.label}</td>
+            <td class="text-muted">{l.source}</td>
+            <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</Base>
