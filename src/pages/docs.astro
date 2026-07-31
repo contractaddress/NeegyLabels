@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="API Docs">
+  <h1>api_reference</h1>
+
+  <p class="text-muted" style="margin-bottom:2rem;">
+    Base URL: <code style="color:var(--accent3);">http://192.168.2.168:4321/api/labels</code>
+  </p>
+
+  <h2>auth</h2>
+  <p class="text-muted" style="margin-bottom:1rem;">
+    Bearer token in <code>Authorization</code> header. Tokens generated via <a href="/admin">/admin</a>.
+  </p>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>Authorization: Bearer n33gy&lt;id&gt;_&lt;secret&gt;</code></pre>
+
+  <h2>GET /api/labels</h2>
+  <p class="text-muted">List or search labels. Public — no auth required.</p>
+
+  <table style="margin-bottom:1rem;">
+    <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>address</td><td>string</td><td>Lowercase 0x address</td></tr>
+      <tr><td>chain</td><td>string</td><td>Chain key (ethereum, base, bsc, ...)</td></tr>
+      <tr><td>limit</td><td>int</td><td>Max results, default 50</td></tr>
+      <tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
+    </tbody>
+  </table>
+
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>GET /api/labels
+GET /api/labels?address=0x1f98431c8ad98523631ae4a59f267346ea31f984
+GET /api/labels?chain=ethereum</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{
+  "labels": [
+    {
+      "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+      "chain": "ethereum",
+      "label": "Uniswap V3",
+      "type": "factory",
+      "source": "json",
+      "added_at": "2026-07-31 15:00:40"
+    }
+  ],
+  "total": 1
+}</code></pre>
+
+  <h2>POST /api/labels</h2>
+  <p class="text-muted">Create a label. Requires auth.</p>
+
+  <table style="margin-bottom:1rem;">
+    <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>address</td><td>yes</td><td>Lowercase 0x address</td></tr>
+      <tr><td>chain</td><td>yes</td><td>Chain key or * for cross-chain</td></tr>
+      <tr><td>label</td><td>yes</td><td>Human-readable name</td></tr>
+      <tr><td>type</td><td>no</td><td>factory, wallet, cex, bridge, mixer, launcher, other</td></tr>
+      <tr><td>source</td><td>no</td><td>Default: manual</td></tr>
+    </tbody>
+  </table>
+
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>POST /api/labels
+Content-Type: application/json
+Authorization: Bearer n33gy...</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{
+  "address": "0xd29c85f15df544ba632c9e25829fd29d767d7978",
+  "chain": "robinhood",
+  "label": "Across Protocol SpokePool",
+  "type": "bridge"
+}</code></pre>
+
+  <h2>DELETE /api/labels</h2>
+  <p class="text-muted">Delete a label. Requires auth.</p>
+
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>DELETE /api/labels?address=0xabc...&amp;chain=ethereum
+{ "success": true }</code></pre>
+
+  <h2>errors</h2>
+  <table style="margin-bottom:1rem;">
+    <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>400</td><td>Missing required fields</td></tr>
+      <tr><td>401</td><td>Missing or invalid auth</td></tr>
+      <tr><td>404</td><td>Label not found</td></tr>
+      <tr><td>500</td><td>Database error</td></tr>
+    </tbody>
+  </table>
+
+  <h2>chains</h2>
+  <p class="text-muted">
+    <code>ethereum</code> <code>robinhood</code> <code>base</code> <code>bsc</code> <code>arbitrum</code> <code>optimism</code> <code>polygon</code> <code>avalanche</code> <code>unichain</code> <code>*</code>
+  </p>
+
+  <h2>types</h2>
+  <p class="text-muted">
+    <code>factory</code> <code>wallet</code> <code>cex</code> <code>bridge</code> <code>mixer</code> <code>launcher</code> <code>other</code> <code>unknown</code>
+  </p>
+</Base>

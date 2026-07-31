@@ -1,32 +1,61 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getRecentLabels, getChainCounts, getDistinctChains } from '../lib/db.ts';
+import { getRecentLabels, getChainCounts, lookupByAddress } from '../lib/db.ts';
 
+const url = new URL(Astro.request.url);
+const searchAddr = url.searchParams.get('address')?.trim() ?? null;
+
+const searchResults = searchAddr ? lookupByAddress(searchAddr) : null;
 const labels = getRecentLabels(20);
 const chainCounts = getChainCounts();
-const chains = getDistinctChains();
 ---
 
 <Base title="Home">
-  <section>
-    <h1>root</h1>
-    <p class="text-muted gap-top">
-      On-chain label database for EVM addresses. <strong>{chains.length} chains</strong> indexed.
-    </p>
-  </section>
+  <h1>root</h1>
+  <p class="text-muted gap-top">
+    On-chain label database for EVM addresses. <strong>{chainCounts.length} chains</strong> indexed.
+  </p>
 
-  <section>
-    <form action="/lookup" method="GET" class="search-bar">
-      <input
-        type="text"
-        name="address"
-        placeholder="0x..."
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button type="submit">resolve</button>
-    </form>
-  </section>
+  <form action="/" method="GET" class="search-bar">
+    <input
+      type="text"
+      name="address"
+      placeholder="0x..."
+      value={searchAddr ?? ''}
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <button type="submit">resolve</button>
+  </form>
+
+  {searchResults !== null && (
+    <>
+      <div class="section-header">
+        <h2><span class="address-mono">{searchAddr}</span></h2>
+        <span class="text-muted">{searchResults.length} {searchResults.length === 1 ? 'label' : 'labels'}</span>
+      </div>
+      {searchResults.length === 0 ? (
+        <div class="empty-state"><p>no labels found</p></div>
+      ) : (
+        <table>
+          <thead>
+            <tr><th>Chain</th><th>Label</th><th>Type</th><th>Source</th><th>Added</th></tr>
+          </thead>
+          <tbody>
+            {searchResults.map((l) => (
+              <tr>
+                <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
+                <td><strong>{l.label}</strong></td>
+                <td><span class="badge" data-type={l.type}>{l.type}</span></td>
+                <td class="text-muted">{l.source}</td>
+                <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </>
+  )}
 
   <section>
     <div class="section">
@@ -53,42 +82,27 @@ const chains = getDistinctChains();
   <section>
     <div class="section-header">
       <h2>recent_labels</h2>
-      <a href="/lookup" class="text-muted">view all →</a>
     </div>
     <table>
       <thead>
-        <tr>
-          <th>Address</th>
-          <th>Chain</th>
-          <th>Label</th>
-          <th>Type</th>
-          <th>Added</th>
-        </tr>
+        <tr><th>Address</th><th>Chain</th><th>Label</th><th>Type</th><th>Added</th></tr>
       </thead>
       <tbody>
         {labels.length === 0 ? (
-          <tr>
-            <td colspan="5" class="empty-state">
-              <p>no labels in database</p>
-            </td>
-          </tr>
+          <tr><td colspan="5" class="empty-state"><p>no labels in database</p></td></tr>
         ) : (
           labels.map((l) => (
             <tr>
               <td class="address-cell">
                 <span class="address-mono">
-                  <a href={`/lookup?address=${l.address}`}>
+                  <a href={`/?address=${l.address}`}>
                     <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
                   </a>
                 </span>
               </td>
-              <td>
-                <span class="badge" data-chain={l.chain}>{l.chain}</span>
-              </td>
+              <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
               <td>{l.label}</td>
-              <td>
-                <span class="badge" data-type={l.type}>{l.type}</span>
-              </td>
+              <td><span class="badge" data-type={l.type}>{l.type}</span></td>
               <td class="text-muted">{l.added_at.slice(0, 10)}</td>
             </tr>
           ))
