@@ -50,6 +50,7 @@ export interface LabelInput {
 export function lookupLabels(params: {
   address?: string;
   chain?: string;
+  type?: string;
   limit?: number;
   offset?: number;
 }): Label[] {
@@ -65,12 +66,16 @@ export function lookupLabels(params: {
     conditions.push('chain = ?');
     values.push(params.chain);
   }
+  if (params.type) {
+    conditions.push('type = ?');
+    values.push(params.type);
+  }
 
   const where = conditions.length > 0
     ? `WHERE ${conditions.join(' AND ')}`
     : '';
 
-  const limit = Math.min(params.limit ?? 50, 200);
+  const limit = Math.min(params.limit ?? 50, 10000);
   const offset = params.offset ?? 0;
 
   const stmt = d.prepare(

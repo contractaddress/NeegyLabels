@@ -21,11 +21,12 @@ function checkAuth(request: Request): boolean {
 export const GET: APIRoute = async ({ request, url }) => {
   const address = url.searchParams.get('address');
   const chain = url.searchParams.get('chain');
+  const type = url.searchParams.get('type');
   const limit = parseInt(url.searchParams.get('limit') ?? '50', 10);
   const offset = parseInt(url.searchParams.get('offset') ?? '0', 10);
 
   try {
-    if (!address && !chain) {
+    if (!address && !chain && !type) {
       const labels = getRecentLabels(limit);
       const chains = getDistinctChains();
       return new Response(JSON.stringify({ labels, chains, total: labels.length }), {
@@ -37,6 +38,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     const labels = lookupLabels({
       address: address ?? undefined,
       chain: chain ?? undefined,
+      type: type ?? undefined,
       limit,
       offset,
     });

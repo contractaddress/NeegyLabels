@@ -3,8 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { lookupLabels, getDistinctChains } from '../../lib/db.ts';
 
 const { type } = Astro.params;
-const labels = lookupLabels({ limit: 10000 });
-const filtered = labels.filter((l) => l.type === type);
+const labels = lookupLabels({ type, limit: 10000 });
 
 const chains = getDistinctChains();
 ---
@@ -13,10 +12,10 @@ const chains = getDistinctChains();
   <h1>/type/<span class="badge" data-type={type}>{type}</span></h1>
 
   <div class="section-header">
-    <span class="text-muted">{filtered.length} {filtered.length === 1 ? 'label' : 'labels'}</span>
+    <span class="text-muted">{labels.length} {labels.length === 1 ? 'label' : 'labels'}</span>
   </div>
 
-  {filtered.length === 0 ? (
+  {labels.length === 0 ? (
     <div class="empty-state"><p>no labels of type <strong>{type}</strong></p></div>
   ) : (
     <table>
@@ -24,7 +23,7 @@ const chains = getDistinctChains();
         <tr><th>Address</th><th>Chain</th><th>Label</th><th>Source</th><th>Added</th></tr>
       </thead>
       <tbody>
-        {filtered.map((l) => (
+        {labels.map((l) => (
           <tr>
             <td class="address-cell">
               <span class="address-mono">
