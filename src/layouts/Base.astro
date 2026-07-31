@@ -16,6 +16,59 @@ const { title, description, requireAuth = true } = Astro.props;
     <title>{title} — NeegyLabels</title>
     {description && <meta name="description" content={description} />}
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='24' font-size='24'>NL</text></svg>" />
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        const storageKey = 'neegy_hidden_chains';
+        const hidden = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+        const btn = document.getElementById('toggle-edit');
+        const isAdminPage = window.location.pathname === '/admin';
+
+        function apply() {
+          document.querySelectorAll('.chain-chip').forEach(chip => {
+            const c = chip.dataset.chain;
+            if (!c) return;
+            if (hidden.has(c)) {
+              chip.classList.add('hidden');
+              const icon = chip.querySelector('.chain-toggle');
+              if (icon) icon.textContent = '─';
+            }
+          });
+          if (!isAdminPage) {
+            document.querySelectorAll('.chain-section-title').forEach(el => {
+              const c = el.dataset.chain;
+              if (c && hidden.has(c)) el.style.opacity = '0.3';
+            });
+          }
+        }
+
+        apply();
+
+        document.querySelectorAll('.chain-chip').forEach(chip => {
+          const c = chip.dataset.chain;
+          if (!c || isAdminPage) return;
+
+          const icon = document.createElement('span');
+          icon.className = 'chain-toggle';
+          icon.textContent = hidden.has(c) ? '─' : '●';
+          icon.title = 'toggle visibility';
+          icon.style.cssText = 'cursor:pointer;opacity:0.4;font-size:0.65rem;margin-right:0.3rem;user-select:none;';
+          icon.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (hidden.has(c)) {
+              hidden.delete(c);
+              icon.textContent = '●';
+            } else {
+              hidden.add(c);
+              icon.textContent = '─';
+            }
+            localStorage.setItem(storageKey, JSON.stringify([...hidden]));
+            apply();
+          };
+          chip.insertBefore(icon, chip.firstChild);
+        });
+      });
+    </script>
   </head>
   <body>
     <header>
@@ -500,7 +553,24 @@ const { title, description, requireAuth = true } = Astro.props;
     background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
+  .chain-chip.hidden {
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .chain-chip .chain-toggle {
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+
+  .chain-chip .chain-toggle:hover {
+    opacity: 1 !important;
+  }
+
   .chain-chip .count {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
     color: var(--text-muted);
     font-size: 0.78rem;
   }
