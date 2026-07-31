@@ -1,10 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel, getTypeCounts } from '../lib/db.ts';
+import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel, getTypeCounts, lookupLabels } from '../lib/db.ts';
 import { explorerUrl } from '../lib/explorers.ts';
 
 const url = new URL(Astro.request.url);
 const searchAddr = url.searchParams.get('address')?.trim() ?? null;
+const searchLabel = url.searchParams.get('label')?.trim() ?? null;
 
 if (Astro.request.method === 'POST') {
   const data = await Astro.request.formData();
@@ -16,7 +17,11 @@ if (Astro.request.method === 'POST') {
   return Astro.redirect(`/?address=${encodeURIComponent(delAddr ?? '')}`);
 }
 
-const searchResults = searchAddr ? lookupByAddress(searchAddr) : null;
+const searchResults = searchAddr
+  ? lookupByAddress(searchAddr)
+  : searchLabel
+    ? lookupLabels({ label: searchLabel, limit: 500 })
+    : null;
 const labels = getRecentLabels(20);
 const chainCounts = getChainCounts();
 const typeCounts = getTypeCounts();
@@ -36,6 +41,14 @@ const typeCounts = getTypeCounts();
       value={searchAddr ?? ''}
       autocomplete="off"
       spellcheck="false"
+    />
+    <input
+      type="text"
+      name="label"
+      placeholder="label name..."
+      value={searchLabel ?? ''}
+      autocomplete="off"
+      style="max-width:200px;"
     />
     <button type="submit">resolve</button>
   </form>

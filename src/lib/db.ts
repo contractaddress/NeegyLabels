@@ -55,6 +55,7 @@ export function lookupLabels(params: {
   address?: string;
   chain?: string;
   type?: string;
+  label?: string;
   limit?: number;
   offset?: number;
 }): Label[] {
@@ -73,6 +74,10 @@ export function lookupLabels(params: {
   if (params.type) {
     conditions.push('type = ?');
     values.push(params.type);
+  }
+  if (params.label) {
+    conditions.push('label LIKE ?');
+    values.push(`%${params.label}%`);
   }
 
   const where = conditions.length > 0

@@ -22,6 +22,7 @@ export const GET: APIRoute = async ({ request, url }) => {
   const address = url.searchParams.get('address');
   const chain = url.searchParams.get('chain');
   const type = url.searchParams.get('type');
+  const label = url.searchParams.get('label');
   const limit = parseInt(url.searchParams.get('limit') ?? '50', 10);
   const offset = parseInt(url.searchParams.get('offset') ?? '0', 10);
 
@@ -30,6 +31,7 @@ export const GET: APIRoute = async ({ request, url }) => {
       address: address ?? undefined,
       chain: chain ?? undefined,
       type: type ?? undefined,
+      label: label ?? undefined,
       limit: url.searchParams.get('bulk') === 'true' ? 1_000_000 : limit,
       offset: url.searchParams.get('bulk') === 'true' ? 0 : offset,
     });
