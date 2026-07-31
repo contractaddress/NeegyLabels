@@ -20,52 +20,72 @@ const { title, description, requireAuth = true } = Astro.props;
       document.addEventListener('DOMContentLoaded', () => {
         const storageKey = 'neegy_hidden_chains';
         const hidden = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
-        const btn = document.getElementById('toggle-edit');
-        const isAdminPage = window.location.pathname === '/admin';
 
-        function apply() {
+        function filterChains() {
           document.querySelectorAll('.chain-chip').forEach(chip => {
             const c = chip.dataset.chain;
-            if (!c) return;
-            if (hidden.has(c)) {
-              chip.classList.add('hidden');
-              const icon = chip.querySelector('.chain-toggle');
-              if (icon) icon.textContent = '─';
-            }
+            if (c && hidden.has(c)) chip.style.display = 'none';
+            else chip.style.display = '';
           });
-          if (!isAdminPage) {
-            document.querySelectorAll('.chain-section-title').forEach(el => {
-              const c = el.dataset.chain;
-              if (c && hidden.has(c)) el.style.opacity = '0.3';
-            });
-          }
+          const badge = document.getElementById('hidden-count');
+          if (badge) badge.textContent = hidden.size;
         }
 
-        apply();
+        filterChains();
 
-        document.querySelectorAll('.chain-chip').forEach(chip => {
-          const c = chip.dataset.chain;
-          if (!c || isAdminPage) return;
+        document.querySelectorAll('.edit-toggle-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const section = btn.closest('section, .section') || btn.parentElement?.parentElement;
+            const chips = (section || document).querySelectorAll('.chain-chip');
+            const hiddenPanel = document.getElementById('hidden-panel');
+            const isEditing = chips[0]?.classList.toggle('editing');
 
-          const icon = document.createElement('span');
-          icon.className = 'chain-toggle';
-          icon.textContent = hidden.has(c) ? '─' : '●';
-          icon.title = 'toggle visibility';
-          icon.style.cssText = 'cursor:pointer;opacity:0.4;font-size:0.65rem;margin-right:0.3rem;user-select:none;';
-          icon.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (hidden.has(c)) {
-              hidden.delete(c);
-              icon.textContent = '●';
-            } else {
-              hidden.add(c);
-              icon.textContent = '─';
-            }
-            localStorage.setItem(storageKey, JSON.stringify([...hidden]));
-            apply();
-          };
-          chip.insertBefore(icon, chip.firstChild);
+            btn.textContent = isEditing ? 'done' : '✎ edit';
+
+            chips.forEach(chip => {
+              if (hidden.has(chip.dataset.chain || '')) return;
+
+              if (isEditing) {
+                const hideBtn = document.createElement('span');
+                hideBtn.className = 'chain-hide-btn';
+                hideBtn.textContent = '✕';
+                hideBtn.title = 'hide this chain';
+                hideBtn.onclick = (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const c = chip.dataset.chain;
+                  if (c) {
+                    hidden.add(c);
+                    localStorage.setItem(storageKey, JSON.stringify([...hidden]));
+                    chip.style.display = 'none';
+                    if (hiddenPanel) hiddenPanel.style.display = '';
+                    const badge = document.getElementById('hidden-count');
+                    if (badge) badge.textContent = hidden.size;
+                  }
+                };
+                chip.appendChild(hideBtn);
+              } else {
+                const existing = chip.querySelector('.chain-hide-btn');
+                if (existing) existing.remove();
+              }
+            });
+
+            if (hiddenPanel) hiddenPanel.style.display = isEditing && hidden.size > 0 ? '' : 'none';
+          });
+        });
+
+        document.getElementById('show-all-btn')?.addEventListener('click', () => {
+          hidden.clear();
+          localStorage.setItem(storageKey, '[]');
+          document.querySelectorAll('.chain-chip').forEach(chip => {
+            chip.style.display = '';
+            const btn = chip.querySelector('.chain-hide-btn');
+            if (btn) btn.remove();
+          });
+          const panel = document.getElementById('hidden-panel');
+          if (panel) panel.style.display = 'none';
+          const badge = document.getElementById('hidden-count');
+          if (badge) badge.textContent = '0';
         });
       });
     </script>
@@ -553,26 +573,39 @@ const { title, description, requireAuth = true } = Astro.props;
     background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
-  .chain-chip.hidden {
-    opacity: 0.2;
-    pointer-events: none;
-  }
-
-  .chain-chip .chain-toggle {
-    flex-shrink: 0;
-    transition: color 0.15s;
-  }
-
-  .chain-chip .chain-toggle:hover {
-    opacity: 1 !important;
-  }
-
   .chain-chip .count {
     color: var(--text-muted);
     font-size: 0.78rem;
   }
+
+  .chain-hide-btn {
+    cursor: pointer;
+    color: var(--danger);
+    font-size: 0.7rem;
+    margin-left: auto;
+    padding: 0 0.3rem;
+    opacity: 0.6;
+    user-select: none;
+  }
+
+  .chain-hide-btn:hover {
+    opacity: 1;
+  }
+
+  .edit-toggle-btn {
+    background: none;
+    border: 1px solid var(--border);
     color: var(--text-muted);
-    font-size: 0.78rem;
+    padding: 0.15rem 0.6rem;
+    font-family: var(--font);
+    font-size: 0.72rem;
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .edit-toggle-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .mono {

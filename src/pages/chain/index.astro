@@ -6,19 +6,28 @@ const chainCounts = getChainCounts();
 ---
 
 <Base title="Chains">
-  <h1>chains</h1>
+  <section>
+    <div class="section-header">
+      <h1>chains</h1>
+      <button type="button" class="edit-toggle-btn">✎ edit</button>
+    </div>
 
-  <div class="grid-2">
-    {chainCounts.map(({ chain, count }) => (
-      <a href={`/chain/${chain}`} class="chain-chip" data-chain={chain}>
-        <span class="mono">
-          {chain === '*' ? (
-            <span class="badge" data-chain="*">*</span>
-          ) : null}
-          {' '}{chain}
-        </span>
-        <span class="count">{count}</span>
-      </a>
-    ))}
-  </div>
+    <div class="grid-2">
+      {chainCounts.map(({ chain, count }) => (
+        <a href={`/chain/${chain}`} class="chain-chip" data-chain={chain}>
+          <span class="mono">
+            {chain === '*' ? (
+              <span class="badge" data-chain="*">*</span>
+            ) : null}
+            {' '}{chain}
+          </span>
+          <span class="count">{count}</span>
+        </a>
+      ))}
+    </div>
+    <div id="hidden-panel" style="display:none;margin-top:0.5rem;font-size:0.8rem;">
+      <span class="text-muted"><span id="hidden-count">0</span> chains hidden — </span>
+      <a href="#" id="show-all-btn" style="color:var(--accent);">show all</a>
+    </div>
+  </section>
 </Base>

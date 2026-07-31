@@ -16,14 +16,23 @@ const allChains = getDistinctChains();
 <Base title={`Chain / ${chain}`}>
   <h1>/chain/{chain}</h1>
 
-  <div class="grid-2" style="margin-bottom:1rem;">
-    {allChains.map((c) => (
-      <a href={`/chain/${c}`} class={`chain-chip${c === chain ? ' active' : ''}`} data-chain={c}>
-        <span class="mono">{c}</span>
-        <span class="count">{chainCounts.find((x) => x.chain === c)?.count ?? 0}</span>
-      </a>
-    ))}
-  </div>
+  <section>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:0.4rem;">
+      <button type="button" class="edit-toggle-btn">✎ edit</button>
+    </div>
+    <div class="grid-2">
+      {allChains.map((c) => (
+        <a href={`/chain/${c}`} class={`chain-chip${c === chain ? ' active' : ''}`} data-chain={c}>
+          <span class="mono">{c}</span>
+          <span class="count">{chainCounts.find((x) => x.chain === c)?.count ?? 0}</span>
+        </a>
+      ))}
+    </div>
+    <div id="hidden-panel" style="display:none;margin-top:0.5rem;font-size:0.8rem;">
+      <span class="text-muted"><span id="hidden-count">0</span> chains hidden — </span>
+      <a href="#" id="show-all-btn" style="color:var(--accent);">show all</a>
+    </div>
+  </section>
 
   <div class="section-header">
     <h2>
@@ -57,7 +66,7 @@ const allChains = getDistinctChains();
           <tr>
             <td class="address-cell">
               <span class="address-mono">
-                <a href={`/lookup?address=${l.address}`}>
+                  <a href={`/?address=${l.address}`}>
                   <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
                 </a>
               </span>

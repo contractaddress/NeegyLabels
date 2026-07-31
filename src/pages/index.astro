@@ -78,7 +78,10 @@ const chainCounts = getChainCounts();
     <div class="section">
       <div class="section-header">
         <h2>chains</h2>
-        <span class="text-muted">{chainCounts.length} total</span>
+        <span>
+          <span class="text-muted">{chainCounts.length} total</span>
+          <button type="button" class="edit-toggle-btn">✎ edit</button>
+        </span>
       </div>
       <div class="grid-2">
         {chainCounts.map(({ chain, count }) => (
@@ -92,6 +95,10 @@ const chainCounts = getChainCounts();
             <span class="count">{count}</span>
           </a>
         ))}
+      </div>
+      <div id="hidden-panel" style="display:none;margin-top:0.5rem;font-size:0.8rem;">
+        <span class="text-muted"><span id="hidden-count">0</span> chains hidden — </span>
+        <a href="#" id="show-all-btn" style="color:var(--accent);">show all</a>
       </div>
     </div>
   </section>
