@@ -35,7 +35,7 @@ By chain:
 
 Response:
   {
-    "labels": [{ "address": "...", "chain": "...", "label": "...", "type": "...", "source": "...", "added_at": "..." }],
+    "labels": [{ "address": "...", "chain": "...", "label": "...", "type": "...", "source": "...", "confidence": null, "added_at": "..." }],
     "total": 1
   }
 
