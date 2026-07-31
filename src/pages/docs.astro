@@ -1,12 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const getResponse = `{
+  "labels": [{
+    "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+    "chain": "ethereum",
+    "label": "Uniswap V3",
+    "type": "factory",
+    "source": "json",
+    "added_at": "2026-07-31 15:00:40"
+  }],
+  "total": 1
+}`;
+
+const postBody = `{
+  "address": "0xd29c85f15df544ba632c9e25829fd29d767d7978",
+  "chain": "robinhood",
+  "label": "Across Protocol SpokePool",
+  "type": "bridge"
+}`;
 ---
 
 <Base title="API Docs">
   <h1>api_reference</h1>
 
   <p class="text-muted" style="margin-bottom:2rem;">
-    Base URL: <code style="color:var(--accent3);">http://192.168.2.168:4321/api/labels</code>
+    Base URL: <code style="color:var(--accent3);">http://localhost:4321/api/labels</code>
   </p>
 
   <h2>auth</h2>
@@ -31,19 +50,7 @@ import Base from '../layouts/Base.astro';
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>GET /api/labels
 GET /api/labels?address=0x1f98431c8ad98523631ae4a59f267346ea31f984
 GET /api/labels?chain=ethereum</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{
-  "labels": [
-    {
-      "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
-      "chain": "ethereum",
-      "label": "Uniswap V3",
-      "type": "factory",
-      "source": "json",
-      "added_at": "2026-07-31 15:00:40"
-    }
-  ],
-  "total": 1
-}</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{getResponse}</code></pre>
 
   <h2>POST /api/labels</h2>
   <p class="text-muted">Create a label. Requires auth.</p>
@@ -62,18 +69,13 @@ GET /api/labels?chain=ethereum</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>POST /api/labels
 Content-Type: application/json
 Authorization: Bearer n33gy...</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{
-  "address": "0xd29c85f15df544ba632c9e25829fd29d767d7978",
-  "chain": "robinhood",
-  "label": "Across Protocol SpokePool",
-  "type": "bridge"
-}</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{postBody}</code></pre>
 
   <h2>DELETE /api/labels</h2>
   <p class="text-muted">Delete a label. Requires auth.</p>
 
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>DELETE /api/labels?address=0xabc...&amp;chain=ethereum
-{ "success": true }</code></pre>
+{'{ "success": true }'}</code></pre>
 
   <h2>errors</h2>
   <table style="margin-bottom:1rem;">
