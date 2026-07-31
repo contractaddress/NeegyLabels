@@ -127,6 +127,29 @@ export function deleteLabel(address: string, chain: string): boolean {
   return result.changes > 0;
 }
 
+export function updateLabel(
+  address: string,
+  chain: string,
+  fields: { label?: string; type?: string; source?: string; confidence?: number | null },
+): boolean {
+  const d = getDb();
+  const sets: string[] = [];
+  const values: (string | number | null)[] = [];
+
+  if (fields.label !== undefined) { sets.push('label = ?'); values.push(fields.label); }
+  if (fields.type !== undefined) { sets.push('type = ?'); values.push(fields.type); }
+  if (fields.source !== undefined) { sets.push('source = ?'); values.push(fields.source); }
+  if (fields.confidence !== undefined) { sets.push('confidence = ?'); values.push(fields.confidence); }
+
+  if (sets.length === 0) return false;
+
+  values.push(address.toLowerCase(), chain);
+  const result = d.prepare(
+    `UPDATE labels SET ${sets.join(', ')} WHERE address = ? AND chain = ?`,
+  ).run(...values);
+  return result.changes > 0;
+}
+
 export function getDistinctChains(): string[] {
   const d = getDb();
   const rows = d.prepare(

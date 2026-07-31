@@ -3,6 +3,7 @@ import {
   lookupLabels,
   insertLabel,
   deleteLabel,
+  updateLabel,
   getDistinctChains,
 } from '../../lib/db.ts';
 import { getLabelCount } from '../../lib/db.ts';
@@ -127,4 +128,50 @@ export const DELETE: APIRoute = async ({ request, url }) => {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
+};
+
+export const PUT: APIRoute = async ({ request, url }) => {
+  if (!checkAuth(request)) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const address = url.searchParams.get('address');
+  const chain = url.searchParams.get('chain');
+
+  if (!address || !chain) {
+    return new Response(
+      JSON.stringify({ error: 'address and chain query params required' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  try {
+    const body = await request.json();
+    const updated = updateLabel(address, chain, {
+      label: body.label,
+      type: body.type,
+      source: body.source,
+      confidence: body.confidence,
+    });
+
+    if (!updated) {
+      return new Response(JSON.stringify({ error: 'Label not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: 'Invalid request', detail: String(err) }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
 };

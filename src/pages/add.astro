@@ -1,34 +1,50 @@
 ---
 import Base from '../layouts/Base.astro';
-import { insertLabel, getDistinctChains } from '../lib/db.ts';
+import { insertLabel, updateLabel, lookupLabels, getDistinctChains } from '../lib/db.ts';
 
 const chains = getDistinctChains();
 const types = ['factory', 'wallet', 'dex', 'token', 'locker', 'router', 'proxy', 'governance', 'oracle', 'multisig', 'lending', 'staking', 'positions', 'multicall', 'lens', 'hook', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
+
+const url = new URL(Astro.request.url);
+const editAddr = url.searchParams.get('address')?.trim() ?? null;
+const editChain = url.searchParams.get('chain')?.trim() ?? null;
+const isEdit = editAddr !== null && editChain !== null;
+const existing = isEdit ? (lookupLabels({ address: editAddr, chain: editChain })[0] || null) : null;
 
 let flash: { type: 'success' | 'error'; message: string } | null = null;
 
 if (Astro.request.method === 'POST') {
   try {
     const formData = await Astro.request.formData();
-    const address = formData.get('address')?.toString()?.trim();
+    const addr = formData.get('address')?.toString()?.trim();
     const chain = formData.get('chain')?.toString()?.trim();
     const label = formData.get('label')?.toString()?.trim();
     const type = formData.get('type')?.toString()?.trim();
     const source = formData.get('source')?.toString()?.trim();
+    const mode = formData.get('_mode')?.toString();
 
-    if (!address || !chain || !label) {
+    if (!addr || !chain || !label) {
       flash = { type: 'error', message: 'address, chain, and label are required' };
+    } else if (mode === 'update') {
+      const confRaw = formData.get('confidence')?.toString()?.trim();
+      updateLabel(addr, chain, {
+        label,
+        type: type || undefined,
+        source: source || undefined,
+        confidence: confRaw ? parseInt(confRaw, 10) : null,
+      });
+      flash = { type: 'success', message: `label updated for ${addr.slice(0, 10)}... on ${chain}` };
     } else {
       const confRaw = formData.get('confidence')?.toString()?.trim();
       insertLabel({
-        address,
+        address: addr,
         chain,
         label,
         type: type || undefined,
         source: source || undefined,
         confidence: confRaw ? parseInt(confRaw, 10) : undefined,
       });
-      flash = { type: 'success', message: `label added for ${address.slice(0, 10)}... on ${chain}` };
+      flash = { type: 'success', message: `label added for ${addr.slice(0, 10)}... on ${chain}` };
     }
   } catch (e) {
     flash = { type: 'error', message: String(e) };
@@ -36,8 +52,8 @@ if (Astro.request.method === 'POST') {
 }
 ---
 
-<Base title="Add Label">
-  <h1>add_label</h1>
+<Base title={isEdit ? 'Edit Label' : 'Add Label'}>
+  <h1>{isEdit ? 'edit_label' : 'add_label'}</h1>
 
   {flash && (
     <div class={`flash ${flash.type}`}>
@@ -46,6 +62,8 @@ if (Astro.request.method === 'POST') {
   )}
 
   <form method="POST">
+    {isEdit && <input type="hidden" name="_mode" value="update" />}
+
     <div class="form-group">
       <label for="address">address *</label>
       <input
@@ -53,18 +71,21 @@ if (Astro.request.method === 'POST') {
         id="address"
         name="address"
         placeholder="0xd29c85f15df544ba632c9e25829fd29d767d7978"
+        value={existing?.address ?? ''}
         required
+        {...(isEdit ? { readonly: true } : {})}
         autocomplete="off"
         spellcheck="false"
+        style={isEdit ? 'opacity:0.5;cursor:not-allowed;' : ''}
       />
     </div>
 
     <div class="row">
       <div class="form-group">
         <label for="chain">chain *</label>
-        <select id="chain" name="chain" required>
+        <select id="chain" name="chain" required {...(isEdit ? { disabled: true } : {})}>
           <option value="">— select —</option>
-          {chains.map((c) => <option value={c}>{c}</option>)}
+          {chains.map((c) => <option value={c} selected={c === existing?.chain}>{c}</option>)}
         </select>
       </div>
 
@@ -72,7 +93,7 @@ if (Astro.request.method === 'POST') {
         <label for="type">type</label>
         <select id="type" name="type">
           <option value="">— select —</option>
-          {types.map((t) => <option value={t}>{t}</option>)}
+          {types.map((t) => <option value={t} selected={t === existing?.type}>{t}</option>)}
         </select>
       </div>
     </div>
@@ -84,6 +105,7 @@ if (Astro.request.method === 'POST') {
         id="label"
         name="label"
         placeholder="Uniswap V3 Factory"
+        value={existing?.label ?? ''}
         required
       />
     </div>
@@ -95,7 +117,7 @@ if (Astro.request.method === 'POST') {
           type="text"
           id="source"
           name="source"
-          value="manual"
+          value={existing?.source ?? 'manual'}
           placeholder="manual, json, explorer"
         />
       </div>
@@ -107,11 +129,12 @@ if (Astro.request.method === 'POST') {
           name="confidence"
           min="0"
           max="100"
+          value={existing?.confidence ?? ''}
           placeholder="e.g. 85"
         />
       </div>
     </div>
 
-    <button type="submit">insert_label()</button>
+    <button type="submit">{isEdit ? 'update_label()' : 'insert_label()'}</button>
   </form>
 </Base>
