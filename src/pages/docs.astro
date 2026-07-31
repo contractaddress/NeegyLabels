@@ -21,6 +21,14 @@ const postBody = `{
   "type": "bridge",
   "confidence": 95
 }`;
+
+const putBody = `{
+  "label": "Updated Name",
+  "type": "dex",
+  "confidence": 95
+}`;
+
+const successResponse = '{ "success": true }';
 ---
 
 <Base title="API Docs">
@@ -80,7 +88,7 @@ Authorization: Bearer n33gy...</code></pre>
   <p class="text-muted">Delete a label. Requires auth.</p>
 
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>DELETE /api/labels?address=0xabc...&amp;chain=ethereum
-{'{ "success": true }'}</code></pre>
+{successResponse}</code></pre>
 
   <h2>PUT /api/labels</h2>
   <p class="text-muted">Update a label. Requires auth.</p>
@@ -88,12 +96,8 @@ Authorization: Bearer n33gy...</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>PUT /api/labels?address=0x...&amp;chain=ethereum
 Content-Type: application/json
 Authorization: Bearer n33gy...</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{
-  "label": "Updated Name",
-  "type": "dex",
-  "confidence": 95
-}
-{'{ "success": true }'}</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{putBody}
+{successResponse}</code></pre>
 
   <h2>errors</h2>
   <table style="margin-bottom:1rem;">

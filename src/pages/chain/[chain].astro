@@ -7,6 +7,8 @@ export function getStaticPaths() {
   return chains.map((chain) => ({ params: { chain } }));
 }
 
+export const prerender = false;
+
 const { chain } = Astro.params;
 const labels = lookupLabels({ chain, limit: 200 });
 const chainCounts = getChainCounts();
