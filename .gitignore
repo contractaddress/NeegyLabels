@@ -26,3 +26,4 @@ pnpm-debug.log*
 # database
 src/data/labels.db*
 src/data/auth.db*
+AGENTS.md
