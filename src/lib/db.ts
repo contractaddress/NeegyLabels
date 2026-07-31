@@ -79,7 +79,7 @@ export function lookupLabels(params: {
     ? `WHERE ${conditions.join(' AND ')}`
     : '';
 
-  const limit = Math.min(params.limit ?? 50, 50000);
+  const limit = Math.min(params.limit ?? 50, 500000);
   const offset = params.offset ?? 0;
 
   const stmt = d.prepare(

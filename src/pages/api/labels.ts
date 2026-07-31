@@ -30,8 +30,8 @@ export const GET: APIRoute = async ({ request, url }) => {
       address: address ?? undefined,
       chain: chain ?? undefined,
       type: type ?? undefined,
-      limit,
-      offset,
+      limit: url.searchParams.get('bulk') === 'true' ? 1_000_000 : limit,
+      offset: url.searchParams.get('bulk') === 'true' ? 0 : offset,
     });
 
     const total = address || chain || type
