@@ -1,9 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
-import { insertLabel, getDistinctChains, getDistinctTypes } from '../lib/db.ts';
+import { insertLabel, getDistinctChains } from '../lib/db.ts';
 
 const chains = getDistinctChains();
-const types = getDistinctTypes();
+const types = ['factory', 'wallet', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
 
 let flash: { type: 'success' | 'error'; message: string } | null = null;
 
