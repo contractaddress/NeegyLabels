@@ -79,6 +79,7 @@ export const POST: APIRoute = async ({ request }) => {
       label: body.label,
       type: body.type,
       source: body.source,
+      confidence: body.confidence,
     });
 
     return new Response(JSON.stringify({ label }), {

@@ -16,9 +16,11 @@ function getDb(): Database.Database {
       label TEXT NOT NULL,
       type TEXT DEFAULT 'unknown',
       source TEXT DEFAULT 'manual',
+      confidence INTEGER DEFAULT NULL,
       added_at TEXT DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (address COLLATE NOCASE, chain)
     )`);
+    try { db.exec(`ALTER TABLE labels ADD COLUMN confidence INTEGER DEFAULT NULL`); } catch {}
     db.exec(`CREATE TABLE IF NOT EXISTS api_tokens (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -36,6 +38,7 @@ export interface Label {
   label: string;
   type: string;
   source: string;
+  confidence: number | null;
   added_at: string;
 }
 
@@ -45,6 +48,7 @@ export interface LabelInput {
   label: string;
   type?: string;
   source?: string;
+  confidence?: number | null;
 }
 
 export function lookupLabels(params: {
@@ -95,8 +99,8 @@ export function lookupByAddress(address: string): Label[] {
 export function insertLabel(input: LabelInput): Label {
   const d = getDb();
   const stmt = d.prepare(
-    `INSERT OR REPLACE INTO labels (address, chain, label, type, source, added_at)
-     VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+    `INSERT OR REPLACE INTO labels (address, chain, label, type, source, confidence, added_at)
+     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
   );
   stmt.run(
     input.address.toLowerCase(),
@@ -104,6 +108,7 @@ export function insertLabel(input: LabelInput): Label {
     input.label,
     input.type ?? 'unknown',
     input.source ?? 'manual',
+    input.confidence ?? null,
   );
   return lookupLabels({ address: input.address, chain: input.chain })[0];
 }

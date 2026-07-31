@@ -19,12 +19,14 @@ if (Astro.request.method === 'POST') {
     if (!address || !chain || !label) {
       flash = { type: 'error', message: 'address, chain, and label are required' };
     } else {
+      const confRaw = formData.get('confidence')?.toString()?.trim();
       insertLabel({
         address,
         chain,
         label,
         type: type || undefined,
         source: source || undefined,
+        confidence: confRaw ? parseInt(confRaw, 10) : undefined,
       });
       flash = { type: 'success', message: `label added for ${address.slice(0, 10)}... on ${chain}` };
     }
@@ -86,15 +88,28 @@ if (Astro.request.method === 'POST') {
       />
     </div>
 
-    <div class="form-group">
-      <label for="source">source</label>
-      <input
-        type="text"
-        id="source"
-        name="source"
-        value="manual"
-        placeholder="manual, json, explorer"
-      />
+    <div class="row">
+      <div class="form-group">
+        <label for="source">source</label>
+        <input
+          type="text"
+          id="source"
+          name="source"
+          value="manual"
+          placeholder="manual, json, explorer"
+        />
+      </div>
+      <div class="form-group">
+        <label for="confidence">confidence (0–100)</label>
+        <input
+          type="number"
+          id="confidence"
+          name="confidence"
+          min="0"
+          max="100"
+          placeholder="e.g. 85"
+        />
+      </div>
     </div>
 
     <button type="submit">insert_label()</button>
