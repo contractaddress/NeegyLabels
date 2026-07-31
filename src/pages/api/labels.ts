@@ -3,6 +3,7 @@ import {
   lookupLabels,
   insertLabel,
   deleteLabel,
+  getDistinctChains,
 } from '../../lib/db.ts';
 import { getLabelCount } from '../../lib/db.ts';
 import { verifyToken } from '../../lib/tokens.ts';
@@ -37,7 +38,12 @@ export const GET: APIRoute = async ({ request, url }) => {
       ? labels.length
       : getLabelCount();
 
-    return new Response(JSON.stringify({ labels, total }), {
+    const body: Record<string, unknown> = { labels, total };
+    if (!address && !chain && !type) {
+      body.chains = getDistinctChains();
+    }
+
+    return new Response(JSON.stringify(body), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
