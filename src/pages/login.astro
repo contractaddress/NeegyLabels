@@ -42,7 +42,6 @@ if (sessionUsername) {
   const session = signSession(sessionUsername);
   Astro.cookies.set('nl_session', session, {
     httpOnly: true,
-    secure: import.meta.env.PROD,
     sameSite: 'lax',
     path: '/',
     maxAge: 24 * 60 * 60,
