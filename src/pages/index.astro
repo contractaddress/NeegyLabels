@@ -33,7 +33,7 @@ const typeCounts = getTypeCounts();
     On-chain label database for EVM addresses. <strong>{chainCounts.length} chains</strong> indexed.
   </p>
 
-  <form action="/" method="GET" class="search-bar">
+  <form action="/" method="GET" class="search-bar" style="max-width:300px;">
     <input
       type="text"
       name="address"
@@ -45,11 +45,11 @@ const typeCounts = getTypeCounts();
     <button type="submit">resolve</button>
   </form>
 
-  <form action="/" method="GET" class="search-bar" style="max-width:400px;">
+  <form action="/" method="GET" class="search-bar" style="max-width:200px;">
     <input
       type="text"
       name="label"
-      placeholder="search by label name..."
+      placeholder="label search..."
       value={searchLabel ?? ''}
       autocomplete="off"
       style="font-size:0.88rem;padding:0.45rem 0.7rem;"
