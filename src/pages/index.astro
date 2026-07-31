@@ -1,9 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getRecentLabels, getChainCounts, lookupByAddress } from '../lib/db.ts';
+import { getRecentLabels, getChainCounts, lookupByAddress, deleteLabel } from '../lib/db.ts';
 
 const url = new URL(Astro.request.url);
 const searchAddr = url.searchParams.get('address')?.trim() ?? null;
+
+if (Astro.request.method === 'POST') {
+  const data = await Astro.request.formData();
+  const delAddr = data.get('del_address')?.toString();
+  const delChain = data.get('del_chain')?.toString();
+  if (delAddr && delChain) {
+    deleteLabel(delAddr, delChain);
+  }
+  return Astro.redirect(`/?address=${encodeURIComponent(delAddr ?? '')}`);
+}
 
 const searchResults = searchAddr ? lookupByAddress(searchAddr) : null;
 const labels = getRecentLabels(20);
@@ -39,7 +49,7 @@ const chainCounts = getChainCounts();
       ) : (
         <table>
           <thead>
-            <tr><th>Chain</th><th>Label</th><th>Type</th><th>Source</th><th>Added</th></tr>
+            <tr><th>Chain</th><th>Label</th><th>Type</th><th>Source</th><th>Added</th><th></th></tr>
           </thead>
           <tbody>
             {searchResults.map((l) => (
@@ -49,6 +59,13 @@ const chainCounts = getChainCounts();
                 <td><span class="badge" data-type={l.type}>{l.type}</span></td>
                 <td class="text-muted">{l.source}</td>
                 <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+                <td>
+                  <form method="POST" style="display:inline;max-width:none;" onsubmit="return confirm('Delete this label?')">
+                    <input type="hidden" name="del_address" value={l.address} />
+                    <input type="hidden" name="del_chain" value={l.chain} />
+                    <button class="danger" style="padding:0.15rem 0.45rem;font-size:0.7rem;" title="delete">x</button>
+                  </form>
+                </td>
               </tr>
             ))}
           </tbody>
