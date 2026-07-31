@@ -17,7 +17,8 @@ const postBody = `{
   "address": "0xd29c85f15df544ba632c9e25829fd29d767d7978",
   "chain": "robinhood",
   "label": "Across Protocol SpokePool",
-  "type": "bridge"
+  "type": "bridge",
+  "confidence": 95
 }`;
 ---
 
@@ -63,6 +64,7 @@ GET /api/labels?chain=ethereum</code></pre>
       <tr><td>label</td><td>yes</td><td>Human-readable name</td></tr>
       <tr><td>type</td><td>no</td><td>factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, cex, bridge, mixer, launcher, other</td></tr>
       <tr><td>source</td><td>no</td><td>Default: manual</td></tr>
+      <tr><td>confidence</td><td>no</td><td>0–100 confidence score</td></tr>
     </tbody>
   </table>
 

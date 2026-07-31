@@ -49,7 +49,8 @@ Body (JSON):
     "chain": "robinhood",
     "label": "My Label",
     "type": "bridge",
-    "source": "manual"
+    "source": "manual",
+    "confidence": 95
   }
 
 | Field | Required | Description |
@@ -59,6 +60,7 @@ Body (JSON):
 | label | yes | Human-readable name |
 | type | no | factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, cex, bridge, mixer, launcher, other |
 | source | no | Default: manual |
+| confidence | no | 0-100 confidence score |
 
 Response (201): { "label": { ... } }
 
