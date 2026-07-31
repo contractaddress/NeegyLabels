@@ -149,6 +149,9 @@ const { title, description, requireAuth = true } = Astro.props;
     --chain-unichain: #ff007a;
     --type-factory: #ff79c6;
     --type-wallet: #50fa7b;
+    --type-dex: #7c3aed;
+    --type-token: #f59e0b;
+    --type-locker: #14b8a6;
     --type-cex: #f1fa8c;
     --type-bridge: #8be9fd;
     --type-mixer: #ff5555;
@@ -454,6 +457,9 @@ const { title, description, requireAuth = true } = Astro.props;
   /* Type badges */
   .badge[data-type="factory"]   { border-color: var(--type-factory);   color: var(--type-factory); }
   .badge[data-type="wallet"]    { border-color: var(--type-wallet);    color: var(--type-wallet); }
+  .badge[data-type="dex"]       { border-color: var(--type-dex);       color: var(--type-dex); }
+  .badge[data-type="token"]     { border-color: var(--type-token);     color: var(--type-token); }
+  .badge[data-type="locker"]    { border-color: var(--type-locker);    color: var(--type-locker); }
   .badge[data-type="cex"]       { border-color: var(--type-cex);       color: var(--type-cex); }
   .badge[data-type="bridge"]    { border-color: var(--type-bridge);    color: var(--type-bridge); }
   .badge[data-type="mixer"]     { border-color: var(--type-mixer);     color: var(--type-mixer); }
