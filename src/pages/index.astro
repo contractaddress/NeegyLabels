@@ -42,21 +42,31 @@ const typeCounts = getTypeCounts();
       autocomplete="off"
       spellcheck="false"
     />
+    <button type="submit">resolve</button>
+  </form>
+
+  <form action="/" method="GET" class="search-bar" style="max-width:400px;">
     <input
       type="text"
       name="label"
-      placeholder="label name..."
+      placeholder="search by label name..."
       value={searchLabel ?? ''}
       autocomplete="off"
-      style="max-width:200px;"
+      style="font-size:0.88rem;padding:0.45rem 0.7rem;"
     />
-    <button type="submit">resolve</button>
+    <button type="submit" style="font-size:0.88rem;padding:0.45rem 0.9rem;">find</button>
   </form>
 
   {searchResults !== null && (
     <>
       <div class="section-header">
-        <h2><span class="address-mono">{searchAddr}</span></h2>
+        <h2>
+          {searchAddr ? (
+            <span class="address-mono">{searchAddr}</span>
+          ) : searchLabel ? (
+            <span>label: <strong style="color:var(--accent);">{searchLabel}</strong></span>
+          ) : null}
+        </h2>
         <span class="text-muted">{searchResults.length} {searchResults.length === 1 ? 'label' : 'labels'}</span>
       </div>
       {searchResults.length === 0 ? (
