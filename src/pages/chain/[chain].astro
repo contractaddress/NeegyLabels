@@ -57,6 +57,7 @@ const allChains = getDistinctChains();
           <th>Address</th>
           <th>Label</th>
           <th>Type</th>
+          <th>Conf</th>
           <th>Source</th>
           <th>Added</th>
         </tr>
@@ -73,6 +74,7 @@ const allChains = getDistinctChains();
             </td>
             <td>{l.label}</td>
             <td><a href={`/type/${l.type}`} class="badge" data-type={l.type} style="text-decoration:none;">{l.type}</a></td>
+            <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
             <td class="text-muted">{l.source}</td>
             <td class="text-muted">{l.added_at.slice(0, 10)}</td>
           </tr>

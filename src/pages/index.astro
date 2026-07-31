@@ -51,7 +51,7 @@ const typeCounts = getTypeCounts();
       ) : (
         <table>
           <thead>
-            <tr><th>Chain</th><th>Label</th><th>Type</th><th>Source</th><th>Added</th><th></th></tr>
+            <tr><th>Chain</th><th>Label</th><th>Type</th><th>Conf</th><th>Source</th><th>Added</th><th></th></tr>
           </thead>
           <tbody>
             {searchResults.map((l) => (
@@ -70,6 +70,7 @@ const typeCounts = getTypeCounts();
                 })()}
                 <td><strong>{l.label}</strong></td>
                 <td><a href={`/type/${l.type}`} class="badge" data-type={l.type} style="text-decoration:none;">{l.type}</a></td>
+                <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
                 <td class="text-muted">{l.source}</td>
                 <td class="text-muted">{l.added_at.slice(0, 10)}</td>
                 <td>
@@ -139,11 +140,11 @@ const typeCounts = getTypeCounts();
     </div>
     <table>
       <thead>
-        <tr><th>Address</th><th>Chain</th><th>Label</th><th>Type</th><th>Added</th></tr>
+        <tr><th>Address</th><th>Chain</th><th>Label</th><th>Type</th><th>Conf</th><th>Added</th></tr>
       </thead>
       <tbody>
         {labels.length === 0 ? (
-          <tr><td colspan="5" class="empty-state"><p>no labels in database</p></td></tr>
+          <tr><td colspan="6" class="empty-state"><p>no labels in database</p></td></tr>
         ) : (
           labels.map((l) => (
             <tr>
@@ -157,6 +158,7 @@ const typeCounts = getTypeCounts();
               <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
               <td>{l.label}</td>
               <td><a href={`/type/${l.type}`} class="badge" data-type={l.type} style="text-decoration:none;">{l.type}</a></td>
+              <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
               <td class="text-muted">{l.added_at.slice(0, 10)}</td>
             </tr>
           ))
