@@ -10,6 +10,15 @@ function getDb(): Database.Database {
     db = new Database(DB_PATH);
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
+    db.exec(`CREATE TABLE IF NOT EXISTS labels (
+      address TEXT NOT NULL,
+      chain TEXT NOT NULL,
+      label TEXT NOT NULL,
+      type TEXT DEFAULT 'unknown',
+      source TEXT DEFAULT 'manual',
+      added_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (address COLLATE NOCASE, chain)
+    )`);
     db.exec(`CREATE TABLE IF NOT EXISTS api_tokens (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
