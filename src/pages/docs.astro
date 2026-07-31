@@ -46,12 +46,14 @@ const postBody = `{
       <tr><td>chain</td><td>string</td><td>Chain key (ethereum, base, bsc, ...)</td></tr>
       <tr><td>limit</td><td>int</td><td>Max results, default 50</td></tr>
       <tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
+      <tr><td>bulk</td><td>bool</td><td>Set true to bypass pagination (for exports)</td></tr>
     </tbody>
   </table>
 
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>GET /api/labels
 GET /api/labels?address=0x1f98431c8ad98523631ae4a59f267346ea31f984
-GET /api/labels?chain=ethereum</code></pre>
+GET /api/labels?chain=ethereum
+GET /api/labels?type=mixer&amp;bulk=true</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{getResponse}</code></pre>
 
   <h2>POST /api/labels</h2>

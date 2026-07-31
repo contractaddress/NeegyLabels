@@ -23,6 +23,7 @@ List or search labels. Public (no auth required).
 | chain | string | Chain key (ethereum, base, bsc, etc) |
 | limit | int | Max results, default 50 |
 | offset | int | Pagination offset |
+| bulk | bool | Set true to bypass pagination (for exports) |
 
 All labels:
   GET /api/labels
@@ -32,6 +33,9 @@ By address:
 
 By chain:
   GET /api/labels?chain=ethereum
+
+By type (bulk export):
+  GET /api/labels?type=mixer&bulk=true
 
 Response:
   {
