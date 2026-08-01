@@ -11,14 +11,15 @@ const sigs = ['transfer(address,uint256)', 'approve(address,uint256)', 'swap(add
 const events = ['Transfer', 'Approval', 'Swap', 'Mint', 'Burn', 'Deposit', 'Withdraw', 'Claimed', 'Staked', 'Unstaked'];
 const status = ['✓', '✗', '⚠'];
 const rows: string[] = [];
-for (let i = 0; i < 160; i++) {
-  const hash = '0x' + Array.from({length:40}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+for (let i = 0; i < 300; i++) {
+  const hash = '0x' + Array.from({length:64}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
   const block = Math.floor(Math.random() * 9000000 + 10000000);
   const gas = (Math.random() * 500000 + 20000).toFixed(0);
+  const val = (Math.random() * 10000).toFixed(4);
   const sig = sigs[Math.floor(Math.random() * sigs.length)];
   const event = events[Math.floor(Math.random() * events.length)];
   const st = status[Math.floor(Math.random() * status.length)];
-  rows.push(`${block.toString().padStart(8)}  ${hash.slice(0,18)}..  ${st}  ${sig.padEnd(28)}  Gas:${gas.padStart(7)}  ${event}`);
+  rows.push(`#${block.toString().padStart(8)}  ${hash}  ${st}  ${sig.padEnd(30)}  Gas:${gas.padStart(7)}  ${val.padStart(12)} ETH  ${event}`);
 }
 const bgText = rows.join('\n') + '\n' + rows.join('\n');
 ---
@@ -241,13 +242,13 @@ const bgText = rows.join('\n') + '\n' + rows.join('\n');
     pointer-events: none;
     overflow: hidden;
     font-family: var(--font);
-    font-size: 0.75rem;
-    line-height: 1.2;
-    color: #6b6f7a;
-    opacity: 0.3;
+    font-size: 0.7rem;
+    line-height: 1.15;
+    color: #3f4250;
+    opacity: 0.35;
     white-space: pre;
     padding-top: 60px;
-    animation: scroll-up 120s linear infinite;
+    animation: scroll-up 180s linear infinite;
   }
 
   @keyframes scroll-up {
