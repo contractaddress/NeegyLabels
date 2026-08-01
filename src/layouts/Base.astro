@@ -114,7 +114,7 @@ const bgText = rows.join('\n') + '\n' + rows.join('\n');
     </script>
   </head>
   <body>
-    <div class="bg-stream" aria-hidden="true">{bgText}</div>
+    <div class="bg-stream" aria-hidden="true"><div style="display:inline-block;text-align:left;">{bgText}</div></div>
     <header>
       <a href="/" class="logo">
         <span class="prompt">~</span><span class="slash">/</span>neegy<span class="caret">_</span>
@@ -248,6 +248,7 @@ const bgText = rows.join('\n') + '\n' + rows.join('\n');
     color: #3f4250;
     opacity: 0.35;
     white-space: pre;
+    text-align: center;
     padding-top: 60px;
     animation: scroll-up 180s linear infinite;
   }
