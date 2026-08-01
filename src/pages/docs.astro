@@ -57,7 +57,7 @@ const successResponse = '{ "success": true }';
   <h2>GET /api/labels</h2>
   <p class="text-muted">List or search labels. Public — no auth required.</p>
 
-  <table style="margin-bottom:1rem;">
+  <table class="docs-table" style="margin-bottom:1rem;">
     <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><span class="doc-param">address</span></td><td><span class="doc-type">string</span></td><td>Lowercase 0x address</td></tr>
@@ -79,7 +79,7 @@ GET /api/labels?type=mixer&amp;bulk=true</code></pre>
   <h2>POST /api/labels</h2>
   <p class="text-muted">Create a label. Requires auth.</p>
 
-  <table style="margin-bottom:1rem;">
+  <table class="docs-table" style="margin-bottom:1rem;">
     <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><span class="doc-param">address</span></td><td><span class="doc-req-y">yes</span></td><td>Lowercase 0x address</td></tr>
@@ -111,7 +111,7 @@ Authorization: Bearer n33gy...</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={putBody + '\n' + highlightJson('{ "success": true }')}></code></pre>
 
   <h2>errors</h2>
-  <table style="margin-bottom:1rem;">
+  <table class="docs-table" style="margin-bottom:1rem;">
     <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
     <tbody>
       <tr><td><span class="doc-num">400</span></td><td>Missing required fields</td></tr>
