@@ -29,9 +29,9 @@ const labels = lookupLabels({ type, limit: 10000 });
                 <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
               </span>
             </td>
-            <td><Badge kind="chain" value={l.chain} /></td>
+            <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
             <td>{l.label}</td>
-            <td><Conf value={l.confidence} /></td>
+            <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
             <td class="text-muted">{l.source}</td>
             <td class="text-muted">{l.added_at.slice(0, 10)}</td>
             <td>
