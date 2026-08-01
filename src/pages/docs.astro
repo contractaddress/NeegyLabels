@@ -52,12 +52,12 @@ const successResponse = '{ "success": true }';
   <p class="text-muted" style="margin-bottom:1rem;">
     Bearer token in <code>Authorization</code> header. Tokens generated via <a href="/admin">/admin</a>.
   </p>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>Authorization: Bearer n33gy&lt;id&gt;_&lt;secret&gt;</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code>Authorization: Bearer n33gy&lt;id&gt;_&lt;secret&gt;</code></pre>
 
   <h2>GET /api/labels</h2>
   <p class="text-muted">List or search labels. Public — no auth required.</p>
 
-  <table class="docs-table" style="margin-bottom:1rem;">
+  <table style="margin-bottom:1rem;">
     <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><span class="doc-param">address</span></td><td><span class="doc-type">string</span></td><td>Lowercase 0x address</td></tr>
@@ -70,16 +70,16 @@ const successResponse = '{ "success": true }';
     </tbody>
   </table>
 
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>GET /api/labels
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:0.5rem;"><code>GET /api/labels
 GET /api/labels?address=0x1f98431c8ad98523631ae4a59f267346ea31f984
 GET /api/labels?chain=ethereum
 GET /api/labels?type=mixer&amp;bulk=true</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={getResponse}></code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={getResponse}></code></pre>
 
   <h2>POST /api/labels</h2>
   <p class="text-muted">Create a label. Requires auth.</p>
 
-  <table class="docs-table" style="margin-bottom:1rem;">
+  <table style="margin-bottom:1rem;">
     <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><span class="doc-param">address</span></td><td><span class="doc-req-y">yes</span></td><td>Lowercase 0x address</td></tr>
@@ -91,27 +91,27 @@ GET /api/labels?type=mixer&amp;bulk=true</code></pre>
     </tbody>
   </table>
 
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>POST /api/labels
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:0.5rem;"><code>POST /api/labels
 Content-Type: application/json
 Authorization: Bearer n33gy...</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={postBody}></code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={postBody}></code></pre>
 
   <h2>DELETE /api/labels</h2>
   <p class="text-muted">Delete a label. Requires auth.</p>
 
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>DELETE /api/labels?address=0xabc...&amp;chain=ethereum
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code>DELETE /api/labels?address=0xabc...&amp;chain=ethereum
 <span class="hl-brk">{'{'}</span> <span class="hl-key">"success"</span>: <span class="hl-bool">true</span> <span class="hl-brk">{'}'}</span></code></pre>
 
   <h2>PUT /api/labels</h2>
   <p class="text-muted">Update a label. Requires auth.</p>
 
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>PUT /api/labels?address=0x...&amp;chain=ethereum
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:0.5rem;"><code>PUT /api/labels?address=0x...&amp;chain=ethereum
 Content-Type: application/json
 Authorization: Bearer n33gy...</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={putBody + '\n' + highlightJson('{ "success": true }')}></code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={putBody + '\n' + highlightJson('{ "success": true }')}></code></pre>
 
   <h2>errors</h2>
-  <table class="docs-table" style="margin-bottom:1rem;">
+  <table style="margin-bottom:1rem;">
     <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
     <tbody>
       <tr><td><span class="doc-num">400</span></td><td>Missing required fields</td></tr>
