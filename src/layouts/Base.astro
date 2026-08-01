@@ -11,7 +11,7 @@ const sigs = ['transfer(address,uint256)', 'approve(address,uint256)', 'swap(add
 const events = ['Transfer', 'Approval', 'Swap', 'Mint', 'Burn', 'Deposit', 'Withdraw', 'Claimed', 'Staked', 'Unstaked'];
 const status = ['✓', '✗', '⚠'];
 const rows: string[] = [];
-for (let i = 0; i < 300; i++) {
+for (let i = 0; i < 500; i++) {
   const hash = '0x' + Array.from({length:64}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
   const block = Math.floor(Math.random() * 9000000 + 10000000);
   const gas = (Math.random() * 500000 + 20000).toFixed(0);
@@ -237,10 +237,11 @@ const bgText = rows.join('\n') + '\n' + rows.join('\n');
 
   .bg-stream {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 0;
     pointer-events: none;
-    overflow: hidden;
     font-family: var(--font);
     font-size: 0.7rem;
     line-height: 1.15;
