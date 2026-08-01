@@ -6,6 +6,21 @@ export interface Props {
 }
 
 const { title, description, requireAuth = true } = Astro.props;
+
+const sigs = ['transfer(address,uint256)', 'approve(address,uint256)', 'swap(address,address,uint256)', 'mint(address,uint256)', 'burn(uint256)', 'delegate(address)', 'withdraw(uint256)', 'deposit()', 'claimRewards()', 'harvest()'];
+const events = ['Transfer', 'Approval', 'Swap', 'Mint', 'Burn', 'Deposit', 'Withdraw', 'Claimed', 'Staked', 'Unstaked'];
+const status = ['✓', '✗', '⚠'];
+const rows: string[] = [];
+for (let i = 0; i < 160; i++) {
+  const hash = '0x' + Array.from({length:40}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+  const block = Math.floor(Math.random() * 9000000 + 10000000);
+  const gas = (Math.random() * 500000 + 20000).toFixed(0);
+  const sig = sigs[Math.floor(Math.random() * sigs.length)];
+  const event = events[Math.floor(Math.random() * events.length)];
+  const st = status[Math.floor(Math.random() * status.length)];
+  rows.push(`${block.toString().padStart(8)}  ${hash.slice(0,18)}..  ${st}  ${sig.padEnd(28)}  Gas:${gas.padStart(7)}  ${event}`);
+}
+const bgText = rows.join('\n') + '\n' + rows.join('\n');
 ---
 
 <!doctype html>
@@ -96,28 +111,9 @@ const { title, description, requireAuth = true } = Astro.props;
         });
       });
     </script>
-    <script is:inline>
-      document.addEventListener('DOMContentLoaded', () => {
-        const sigs = ['transfer(address,uint256)', 'approve(address,uint256)', 'swap(address,address,uint256)', 'mint(address,uint256)', 'burn(uint256)', 'delegate(address)', 'withdraw(uint256)', 'deposit()', 'claimRewards()', 'harvest()'];
-        const events = ['Transfer', 'Approval', 'Swap', 'Mint', 'Burn', 'Deposit', 'Withdraw', 'Claimed', 'Staked', 'Unstaked'];
-        const status = ['✓', '✗', '⚠'];
-        const rows = [];
-        for (let i = 0; i < 160; i++) {
-          const hash = '0x' + Array.from({length:40}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-          const block = Math.floor(Math.random() * 9000000 + 10000000);
-          const gas = (Math.random() * 500000 + 20000).toFixed(0);
-          const sig = sigs[Math.floor(Math.random() * sigs.length)];
-          const event = events[Math.floor(Math.random() * events.length)];
-          const st = status[Math.floor(Math.random() * status.length)];
-          rows.push(`${block.toString().padStart(8)}  ${hash.slice(0,18)}..  ${st}  ${sig.padEnd(28)}  Gas:${gas.padStart(7)}  ${event}`);
-        }
-        const el = document.querySelector('.bg-stream');
-        if (el) el.textContent = rows.join('\n') + '\n' + rows.join('\n');
-      });
-    </script>
   </head>
   <body>
-    <div class="bg-stream" aria-hidden="true"></div>
+    <div class="bg-stream" aria-hidden="true">{bgText}</div>
     <header>
       <a href="/" class="logo">
         <span class="prompt">~</span><span class="slash">/</span>neegy<span class="caret">_</span>
