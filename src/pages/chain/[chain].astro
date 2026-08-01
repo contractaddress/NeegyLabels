@@ -70,7 +70,7 @@ const allChains = getDistinctChains();
         {labels.map((l) => (
           <tr>
             <td class="address-cell">
-              <span class="address-mono copy-addr" style="cursor:pointer;" data-addr={l.address} title="click to copy">
+              <span class="address-mono" style="cursor:pointer;" title="click to copy" onclick={`var t=document.createElement('span');t.textContent='copied!';t.style.cssText='position:fixed;background:var(--bg-elevated);color:var(--accent);border:1px solid var(--accent-dim);padding:0.2rem 0.5rem;font-size:0.7rem;pointer-events:none;z-index:9999;white-space:nowrap;';document.body.appendChild(t);var r=this.getBoundingClientRect();t.style.left=(r.left+r.width/2)+'px';t.style.top=(r.top-24)+'px';t.style.transform='translateX(-50%)';setTimeout(()=>t.remove(),1200);var a='${l.address}';try{navigator.clipboard.writeText(a)}catch(e){var i=document.createElement('textarea');i.value=a;i.style.position='fixed';i.style.left='-9999px';document.body.appendChild(i);i.select();document.execCommand('copy');i.remove()}`}>
                 <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
               </span>
             </td>

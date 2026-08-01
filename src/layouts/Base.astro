@@ -95,34 +95,6 @@ const { title, description, requireAuth = true } = Astro.props;
           if (badge) badge.textContent = '0';
         });
       });
-
-      document.querySelectorAll('.address-mono[style*="cursor:pointer"], .copy-addr').forEach(el => {
-        el.addEventListener('click', async () => {
-          const addr = el.getAttribute('onclick')?.match(/writeText\('([^']+)'\)/)?.[1]
-            || el.dataset.addr
-            || '';
-          if (!addr) return;
-          try { await navigator.clipboard.writeText(addr); } catch {
-            const ta = document.createElement('textarea');
-            ta.value = addr;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand('copy');
-            ta.remove();
-          }
-          const toast = document.createElement('span');
-          toast.textContent = 'copied!';
-          toast.style.cssText = 'position:fixed;background:var(--bg-elevated);color:var(--accent);border:1px solid var(--accent-dim);padding:0.2rem 0.5rem;font-size:0.7rem;pointer-events:none;z-index:9999;white-space:nowrap;';
-          document.body.appendChild(toast);
-          const rect = el.getBoundingClientRect();
-          toast.style.left = (rect.left + rect.width / 2) + 'px';
-          toast.style.top = (rect.top - 22) + 'px';
-          toast.style.transform = 'translateX(-50%)';
-          setTimeout(() => toast.remove(), 1200);
-        });
-      });
     </script>
   </head>
   <body>
