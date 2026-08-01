@@ -96,6 +96,26 @@ const { title, description, requireAuth = true } = Astro.props;
           const badge = document.getElementById('hidden-count');
           if (badge) badge.textContent = '0';
         });
+
+        const streamKey = 'neegy_stream_enabled';
+        const toggleBtn = document.getElementById('toggle-stream');
+        const streamEl = document.querySelector('.bg-stream');
+        const overlayEl = document.querySelector('.bg-overlay');
+        const streamEnabled = localStorage.getItem(streamKey) !== 'off';
+
+        function applyStream(on) {
+          if (streamEl) streamEl.style.display = on ? '' : 'none';
+          if (toggleBtn) toggleBtn.textContent = on ? '◉' : '○';
+        }
+        applyStream(streamEnabled);
+
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            const isOn = streamEl?.style.display !== 'none';
+            localStorage.setItem(streamKey, isOn ? 'off' : 'on');
+            applyStream(!isOn);
+          });
+        }
       });
     </script>
   </head>
@@ -110,6 +130,7 @@ const { title, description, requireAuth = true } = Astro.props;
         <a href="/chain">/chain</a>
         <a href="/docs">/docs</a>
         <a href="/admin">/admin</a>
+        <button id="toggle-stream" title="toggle background" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:0.15rem 0.45rem;font-size:0.7rem;cursor:pointer;margin-left:1.5rem;">◉</button>
       </nav>
     </header>
     <main>
