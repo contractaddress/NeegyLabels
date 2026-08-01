@@ -8,6 +8,7 @@ const EXPLORERS: Record<string, string> = {
   avalanche: 'https://snowtrace.io/address/',
   unichain: 'https://uniscan.xyz/address/',
   robinhood: 'https://robinhoodchain.blockscout.com/address/',
+  hyperliquid: 'https://hyperliquid.cloud/address/',
 };
 
 export function explorerUrl(chain: string, address: string): string | null {

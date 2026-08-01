@@ -147,6 +147,7 @@ const { title, description, requireAuth = true } = Astro.props;
     --chain-polygon: #8247e5;
     --chain-avalanche: #e84142;
     --chain-unichain: #ff007a;
+    --chain-hyperliquid: #19edb0;
     --type-factory: #ff79c6;
     --type-wallet: #50fa7b;
     --type-dex: #7c3aed;
@@ -466,6 +467,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .badge[data-chain="polygon"]    { border-color: var(--chain-polygon);    color: var(--chain-polygon); }
   .badge[data-chain="avalanche"]  { border-color: var(--chain-avalanche);  color: var(--chain-avalanche); }
   .badge[data-chain="unichain"]   { border-color: var(--chain-unichain);   color: var(--chain-unichain); }
+  .badge[data-chain="hyperliquid"] { border-color: var(--chain-hyperliquid); color: var(--chain-hyperliquid); }
   .badge[data-chain="*"]          { border-color: var(--warn);              color: var(--warn); }
 
   /* Type badges */
@@ -605,6 +607,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .chain-chip[data-chain="polygon"]   { color: var(--chain-polygon); }
   .chain-chip[data-chain="avalanche"] { color: var(--chain-avalanche); }
   .chain-chip[data-chain="unichain"]  { color: var(--chain-unichain); }
+  .chain-chip[data-chain="hyperliquid"]  { color: var(--chain-hyperliquid); }
 
   .chain-chip:hover {
     border-color: currentColor;
