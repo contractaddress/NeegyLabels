@@ -1,7 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const getResponse = `{
+function highlightJson(json: string): string {
+  return json
+    .replace(/("(?:[^"\\]|\\.)*")\s*:/g, '<span class="hl-key">$1</span>:')
+    .replace(/: ("(?:[^"\\]|\\.)*")/g, ': <span class="hl-str">$1</span>')
+    .replace(/: (\d+(?:\.\d+)?)/g, ': <span class="hl-num">$1</span>')
+    .replace(/: (true|false|null)/g, ': <span class="hl-bool">$1</span>')
+    .replace(/([\[\]{}])/g, '<span class="hl-brk">$1</span>')
+    .replace(/,/g, '<span class="hl-brk">,</span>');
+}
+
+const getResponse = highlightJson(`{
   "labels": [{
     "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
     "chain": "ethereum",
@@ -12,21 +22,21 @@ const getResponse = `{
       "added_at": "2026-07-31 15:00:40"
   }],
   "total": 1
-}`;
+}`);
 
-const postBody = `{
+const postBody = highlightJson(`{
   "address": "0xd29c85f15df544ba632c9e25829fd29d767d7978",
   "chain": "robinhood",
   "label": "Across Protocol SpokePool",
   "type": "bridge",
   "confidence": 95
-}`;
+}`);
 
-const putBody = `{
+const putBody = highlightJson(`{
   "label": "Updated Name",
   "type": "dex",
   "confidence": 95
-}`;
+}`);
 
 const successResponse = '{ "success": true }';
 ---
@@ -62,7 +72,7 @@ const successResponse = '{ "success": true }';
 GET /api/labels?address=0x1f98431c8ad98523631ae4a59f267346ea31f984
 GET /api/labels?chain=ethereum
 GET /api/labels?type=mixer&amp;bulk=true</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{getResponse}</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={getResponse}></code></pre>
 
   <h2>POST /api/labels</h2>
   <p class="text-muted">Create a label. Requires auth.</p>
@@ -82,13 +92,13 @@ GET /api/labels?type=mixer&amp;bulk=true</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>POST /api/labels
 Content-Type: application/json
 Authorization: Bearer n33gy...</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{postBody}</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={postBody}></code></pre>
 
   <h2>DELETE /api/labels</h2>
   <p class="text-muted">Delete a label. Requires auth.</p>
 
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>DELETE /api/labels?address=0xabc...&amp;chain=ethereum
-{successResponse}</code></pre>
+<span class="hl-brk">{'{'}</span> <span class="hl-key">"success"</span>: <span class="hl-bool">true</span> <span class="hl-brk">{'}'}</span></code></pre>
 
   <h2>PUT /api/labels</h2>
   <p class="text-muted">Update a label. Requires auth.</p>
@@ -96,8 +106,7 @@ Authorization: Bearer n33gy...</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:0.5rem;"><code>PUT /api/labels?address=0x...&amp;chain=ethereum
 Content-Type: application/json
 Authorization: Bearer n33gy...</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code>{putBody}
-{successResponse}</code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid var(--border);margin-bottom:2rem;"><code set:html={putBody + '\n' + highlightJson('{ "success": true }')}></code></pre>
 
   <h2>errors</h2>
   <table style="margin-bottom:1rem;">
