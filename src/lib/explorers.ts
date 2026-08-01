@@ -9,6 +9,7 @@ const EXPLORERS: Record<string, string> = {
   unichain: 'https://uniscan.xyz/address/',
   robinhood: 'https://robinhoodchain.blockscout.com/address/',
   hyperliquid: 'https://hyperliquid.cloud/address/',
+  bitcoin: 'https://mempool.space/address/',
 };
 
 export function explorerUrl(chain: string, address: string): string | null {

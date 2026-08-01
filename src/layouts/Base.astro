@@ -148,6 +148,7 @@ const { title, description, requireAuth = true } = Astro.props;
     --chain-avalanche: #e84142;
     --chain-unichain: #ff007a;
     --chain-hyperliquid: #19edb0;
+    --chain-bitcoin: #f7931a;
     --type-factory: #ff79c6;
     --type-wallet: #50fa7b;
     --type-dex: #7c3aed;
@@ -468,6 +469,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .badge[data-chain="avalanche"]  { border-color: var(--chain-avalanche);  color: var(--chain-avalanche); }
   .badge[data-chain="unichain"]   { border-color: var(--chain-unichain);   color: var(--chain-unichain); }
   .badge[data-chain="hyperliquid"] { border-color: var(--chain-hyperliquid); color: var(--chain-hyperliquid); }
+  .badge[data-chain="bitcoin"]     { border-color: var(--chain-bitcoin);     color: var(--chain-bitcoin); }
   .badge[data-chain="*"]          { border-color: var(--warn);              color: var(--warn); }
 
   /* Type badges */
@@ -608,6 +610,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .chain-chip[data-chain="avalanche"] { color: var(--chain-avalanche); }
   .chain-chip[data-chain="unichain"]  { color: var(--chain-unichain); }
   .chain-chip[data-chain="hyperliquid"]  { color: var(--chain-hyperliquid); }
+  .chain-chip[data-chain="bitcoin"]  { color: var(--chain-bitcoin); }
 
   .chain-chip:hover {
     border-color: currentColor;
