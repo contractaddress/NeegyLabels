@@ -100,7 +100,6 @@ const { title, description, requireAuth = true } = Astro.props;
         const streamKey = 'neegy_stream_enabled';
         const toggleBtn = document.getElementById('toggle-stream');
         const streamEl = document.querySelector('.bg-stream');
-        const overlayEl = document.querySelector('.bg-overlay');
         const streamEnabled = localStorage.getItem(streamKey) !== 'off';
 
         function applyStream(on) {
@@ -231,15 +230,6 @@ const { title, description, requireAuth = true } = Astro.props;
     flex-direction: column;
     background: #0a0a0a;
     position: relative;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.6) 100%);
   }
 
   .bg-stream {
