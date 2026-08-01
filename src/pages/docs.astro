@@ -60,11 +60,13 @@ const successResponse = '{ "success": true }';
   <table style="margin-bottom:1rem;">
     <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td>address</td><td>string</td><td>Lowercase 0x address</td></tr>
-      <tr><td>chain</td><td>string</td><td>Chain key (ethereum, base, bsc, ...)</td></tr>
-      <tr><td>limit</td><td>int</td><td>Max results, default 50</td></tr>
-      <tr><td>offset</td><td>int</td><td>Pagination offset</td></tr>
-      <tr><td>bulk</td><td>bool</td><td>Set true to bypass pagination (for exports)</td></tr>
+      <tr><td><span class="doc-param">address</span></td><td><span class="doc-type">string</span></td><td>Lowercase 0x address</td></tr>
+      <tr><td><span class="doc-param">chain</span></td><td><span class="doc-type">string</span></td><td>Chain key (ethereum, base, bsc, ...)</td></tr>
+      <tr><td><span class="doc-param">type</span></td><td><span class="doc-type">string</span></td><td>Filter by type</td></tr>
+      <tr><td><span class="doc-param">label</span></td><td><span class="doc-type">string</span></td><td>Text search on label name</td></tr>
+      <tr><td><span class="doc-param">limit</span></td><td><span class="doc-type">int</span></td><td>Max results, default 50</td></tr>
+      <tr><td><span class="doc-param">offset</span></td><td><span class="doc-type">int</span></td><td>Pagination offset</td></tr>
+      <tr><td><span class="doc-param">bulk</span></td><td><span class="doc-type">bool</span></td><td>Set true to bypass pagination (for exports)</td></tr>
     </tbody>
   </table>
 
@@ -80,12 +82,12 @@ GET /api/labels?type=mixer&amp;bulk=true</code></pre>
   <table style="margin-bottom:1rem;">
     <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td>address</td><td>yes</td><td>Lowercase 0x address</td></tr>
-      <tr><td>chain</td><td>yes</td><td>Chain key or * for cross-chain</td></tr>
-      <tr><td>label</td><td>yes</td><td>Human-readable name</td></tr>
-      <tr><td>type</td><td>no</td><td>factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, multicall, lens, hook, threatactor, cex, bridge, mixer, launcher, other</td></tr>
-      <tr><td>source</td><td>no</td><td>Default: manual</td></tr>
-      <tr><td>confidence</td><td>no</td><td>0–100 confidence score</td></tr>
+      <tr><td><span class="doc-param">address</span></td><td><span class="doc-req-y">yes</span></td><td>Lowercase 0x address</td></tr>
+      <tr><td><span class="doc-param">chain</span></td><td><span class="doc-req-y">yes</span></td><td>Chain key or * for cross-chain</td></tr>
+      <tr><td><span class="doc-param">label</span></td><td><span class="doc-req-y">yes</span></td><td>Human-readable name</td></tr>
+      <tr><td><span class="doc-param">type</span></td><td><span class="doc-req-n">no</span></td><td>factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, multicall, lens, hook, threatactor, cex, bridge, mixer, launcher, other</td></tr>
+      <tr><td><span class="doc-param">source</span></td><td><span class="doc-req-n">no</span></td><td>Default: manual</td></tr>
+      <tr><td><span class="doc-param">confidence</span></td><td><span class="doc-req-n">no</span></td><td>0–100 confidence score</td></tr>
     </tbody>
   </table>
 
@@ -112,10 +114,10 @@ Authorization: Bearer n33gy...</code></pre>
   <table style="margin-bottom:1rem;">
     <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
     <tbody>
-      <tr><td>400</td><td>Missing required fields</td></tr>
-      <tr><td>401</td><td>Missing or invalid auth</td></tr>
-      <tr><td>404</td><td>Label not found</td></tr>
-      <tr><td>500</td><td>Database error</td></tr>
+      <tr><td><span class="doc-num">400</span></td><td>Missing required fields</td></tr>
+      <tr><td><span class="doc-num">401</span></td><td>Missing or invalid auth</td></tr>
+      <tr><td><span class="doc-num">404</span></td><td>Label not found</td></tr>
+      <tr><td><span class="doc-num">500</span></td><td>Database error</td></tr>
     </tbody>
   </table>
 
