@@ -1,4 +1,6 @@
 ---
+import BgStream from '../components/BgStream.astro';
+
 export interface Props {
   title: string;
   description?: string;
@@ -6,22 +8,6 @@ export interface Props {
 }
 
 const { title, description, requireAuth = true } = Astro.props;
-
-const sigs = ['transfer(address,uint256)', 'approve(address,uint256)', 'swap(address,address,uint256)', 'mint(address,uint256)', 'burn(uint256)', 'delegate(address)', 'withdraw(uint256)', 'deposit()', 'claimRewards()', 'harvest()'];
-const events = ['Transfer', 'Approval', 'Swap', 'Mint', 'Burn', 'Deposit', 'Withdraw', 'Claimed', 'Staked', 'Unstaked'];
-const status = ['✓', '✗', '⚠'];
-const rows: string[] = [];
-for (let i = 0; i < 800; i++) {
-  const hash = '0x' + Array.from({length:64}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
-  const block = Math.floor(Math.random() * 9000000 + 10000000);
-  const gas = (Math.random() * 500000 + 20000).toFixed(0);
-  const val = (Math.random() * 10000).toFixed(4);
-  const sig = sigs[Math.floor(Math.random() * sigs.length)];
-  const event = events[Math.floor(Math.random() * events.length)];
-  const st = status[Math.floor(Math.random() * status.length)];
-  rows.push(`#${block.toString().padStart(8)}  ${hash}  ${st}  ${sig.padEnd(30)}  Gas:${gas.padStart(7)}  ${val.padStart(12)} ETH  ${event}`);
-}
-const bgText = rows.join('\n') + '\n' + rows.join('\n');
 ---
 
 <!doctype html>
@@ -114,7 +100,7 @@ const bgText = rows.join('\n') + '\n' + rows.join('\n');
     </script>
   </head>
   <body>
-    <div class="bg-stream" aria-hidden="true"><div style="display:inline-block;text-align:left;">{bgText}</div></div>
+    <BgStream />
     <header>
       <a href="/" class="logo">
         <span class="prompt">~</span><span class="slash">/</span>neegy<span class="caret">_</span>
