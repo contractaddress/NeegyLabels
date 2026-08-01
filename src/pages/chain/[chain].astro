@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { lookupLabels, getDistinctChains, getChainCounts } from '../../lib/db.ts';
+import { explorerUrl } from '../../lib/explorers.ts';
 
 export function getStaticPaths() {
   const chains = getDistinctChains();
@@ -62,16 +63,15 @@ const allChains = getDistinctChains();
           <th>Conf</th>
           <th>Source</th>
           <th>Added</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         {labels.map((l) => (
           <tr>
             <td class="address-cell">
-              <span class="address-mono">
-                  <a href={`/?address=${l.address}`}>
-                  <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
-                </a>
+              <span class="address-mono" style="cursor:pointer;" onclick={`navigator.clipboard.writeText('${l.address}')`} title="click to copy">
+                <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
               </span>
             </td>
             <td>{l.label}</td>
@@ -79,6 +79,14 @@ const allChains = getDistinctChains();
             <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
             <td class="text-muted">{l.source}</td>
             <td class="text-muted">{l.added_at.slice(0, 10)}</td>
+            <td>
+              {(() => {
+                const url = explorerUrl(l.chain, l.address);
+                return url ? (
+                  <a href={url} target="_blank" rel="noopener" class="badge" data-chain={l.chain} style="text-decoration:none;font-size:0.7rem;padding:0.1rem 0.4rem;" title="explorer">↗</a>
+                ) : null;
+              })()}
+            </td>
           </tr>
         ))}
       </tbody>
