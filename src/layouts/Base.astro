@@ -149,6 +149,7 @@ const { title, description, requireAuth = true } = Astro.props;
     --chain-unichain: #ff007a;
     --chain-hyperliquid: #19edb0;
     --chain-bitcoin: #f7931a;
+    --chain-tron: #eb0029;
     --type-factory: #ff79c6;
     --type-wallet: #50fa7b;
     --type-dex: #7c3aed;
@@ -165,6 +166,7 @@ const { title, description, requireAuth = true } = Astro.props;
     --type-multicall: #fb923c;
     --type-lens: #2dd4bf;
     --type-hook: #c084fc;
+    --type-threatactor: #dc2626;
     --conf-low: #ff5555;
     --conf-mid: #f59e0b;
     --conf-high: #50fa7b;
@@ -470,6 +472,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .badge[data-chain="unichain"]   { border-color: var(--chain-unichain);   color: var(--chain-unichain); }
   .badge[data-chain="hyperliquid"] { border-color: var(--chain-hyperliquid); color: var(--chain-hyperliquid); }
   .badge[data-chain="bitcoin"]     { border-color: var(--chain-bitcoin);     color: var(--chain-bitcoin); }
+  .badge[data-chain="tron"]        { border-color: var(--chain-tron);        color: var(--chain-tron); }
   .badge[data-chain="*"]          { border-color: var(--warn);              color: var(--warn); }
 
   /* Type badges */
@@ -489,6 +492,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .badge[data-type="multicall"] { border-color: var(--type-multicall); color: var(--type-multicall); }
   .badge[data-type="lens"]      { border-color: var(--type-lens);      color: var(--type-lens); }
   .badge[data-type="hook"]      { border-color: var(--type-hook);      color: var(--type-hook); }
+  .badge[data-type="threatactor"] { border-color: var(--type-threatactor); color: var(--type-threatactor); }
   .badge[data-type="cex"]       { border-color: var(--type-cex);       color: var(--type-cex); }
   .badge[data-type="bridge"]    { border-color: var(--type-bridge);    color: var(--type-bridge); }
   .badge[data-type="mixer"]     { border-color: var(--type-mixer);     color: var(--type-mixer); }
@@ -611,6 +615,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .chain-chip[data-chain="unichain"]  { color: var(--chain-unichain); }
   .chain-chip[data-chain="hyperliquid"]  { color: var(--chain-hyperliquid); }
   .chain-chip[data-chain="bitcoin"]  { color: var(--chain-bitcoin); }
+  .chain-chip[data-chain="tron"]  { color: var(--chain-tron); }
 
   .chain-chip:hover {
     border-color: currentColor;

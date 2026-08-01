@@ -10,6 +10,7 @@ const EXPLORERS: Record<string, string> = {
   robinhood: 'https://robinhoodchain.blockscout.com/address/',
   hyperliquid: 'https://hyperliquid.cloud/address/',
   bitcoin: 'https://mempool.space/address/',
+  tron: 'https://tronscan.org/#/address/',
 };
 
 export function explorerUrl(chain: string, address: string): string | null {

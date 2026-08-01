@@ -62,7 +62,7 @@ Body (JSON):
 | address | yes | Lowercase 0x address |
 | chain | yes | Chain key or * for cross-chain |
 | label | yes | Human-readable name |
-| type | no | factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, multicall, lens, hook, cex, bridge, mixer, launcher, other |
+| type | no | factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, multicall, lens, hook, threatactor, cex, bridge, mixer, launcher, other |
 | source | no | Default: manual |
 | confidence | no | 0-100 confidence score |
 
@@ -108,7 +108,7 @@ ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain *
 
 ## Types
 
-factory wallet dex token locker router proxy governance oracle multisig lending staking positions multicall lens hook cex bridge mixer launcher other unknown
+factory wallet dex token locker router proxy governance oracle multisig lending staking positions multicall lens hook threatactor cex bridge mixer launcher other unknown
 `, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });

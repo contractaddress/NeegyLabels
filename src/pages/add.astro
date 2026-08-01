@@ -3,9 +3,9 @@ import Base from '../layouts/Base.astro';
 import { insertLabel, updateLabel, lookupLabels, getDistinctChains } from '../lib/db.ts';
 
 const chains = getDistinctChains();
-const allChains = ['ethereum', 'base', 'bsc', 'arbitrum', 'optimism', 'polygon', 'avalanche', 'robinhood', 'unichain', 'hyperliquid', 'bitcoin', '*'];
+const allChains = ['ethereum', 'base', 'bsc', 'arbitrum', 'optimism', 'polygon', 'avalanche', 'robinhood', 'unichain', 'hyperliquid', 'bitcoin', 'tron', '*'];
 const chainSuggestions = [...new Set([...allChains, ...chains])];
-const types = ['factory', 'wallet', 'dex', 'token', 'locker', 'router', 'proxy', 'governance', 'oracle', 'multisig', 'lending', 'staking', 'positions', 'multicall', 'lens', 'hook', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
+const types = ['factory', 'wallet', 'dex', 'token', 'locker', 'router', 'proxy', 'governance', 'oracle', 'multisig', 'lending', 'staking', 'positions', 'multicall', 'lens', 'hook', 'threatactor', 'cex', 'bridge', 'mixer', 'launcher', 'other', 'unknown'];
 
 const url = new URL(Astro.request.url);
 const editAddr = url.searchParams.get('address')?.trim() ?? null;
