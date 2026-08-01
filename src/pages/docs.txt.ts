@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 export const GET: APIRoute = async () => {
   return new Response(`# NeegyLabels API
 
-Base URL: http://localhost:4321/api/labels
+Base URL: https://neegy.tools.lan/api/labels
 
 ## Auth
 
