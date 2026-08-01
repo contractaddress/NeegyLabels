@@ -97,7 +97,7 @@ const { title, description, requireAuth = true } = Astro.props;
       });
     </script>
     <script is:inline>
-      (function() {
+      document.addEventListener('DOMContentLoaded', () => {
         const sigs = ['transfer(address,uint256)', 'approve(address,uint256)', 'swap(address,address,uint256)', 'mint(address,uint256)', 'burn(uint256)', 'delegate(address)', 'withdraw(uint256)', 'deposit()', 'claimRewards()', 'harvest()'];
         const events = ['Transfer', 'Approval', 'Swap', 'Mint', 'Burn', 'Deposit', 'Withdraw', 'Claimed', 'Staked', 'Unstaked'];
         const status = ['✓', '✗', '⚠'];
@@ -113,7 +113,7 @@ const { title, description, requireAuth = true } = Astro.props;
         }
         const el = document.querySelector('.bg-stream');
         if (el) el.textContent = rows.join('\n') + '\n' + rows.join('\n');
-      })();
+      });
     </script>
   </head>
   <body>
@@ -233,15 +233,16 @@ const { title, description, requireAuth = true } = Astro.props;
   .bg-stream {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
     overflow: hidden;
     font-family: var(--font);
-    font-size: 0.7rem;
-    line-height: 1.25;
+    font-size: 0.68rem;
+    line-height: 1.15;
     color: #3a3d4a;
-    opacity: 0.35;
+    opacity: 0.45;
     white-space: pre;
+    padding-top: 60px;
     animation: scroll-up 120s linear infinite;
   }
 
@@ -253,9 +254,9 @@ const { title, description, requireAuth = true } = Astro.props;
   .bg-overlay {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
-    background: radial-gradient(ellipse at 50% 30%, transparent 0%, rgba(10,10,10,0.75) 100%);
+    background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(10,10,10,0.55) 100%);
   }
 
   header {
