@@ -619,7 +619,7 @@ const { title, description, requireAuth = true } = Astro.props;
   .section {
     background: rgba(18,18,18,0.8);
     backdrop-filter: blur(3px);
-    border: 1px solid var(--border-active);
+    border: 1px solid #4a4a4a;
     padding: 1.2rem;
   }
 
@@ -641,7 +641,7 @@ const { title, description, requireAuth = true } = Astro.props;
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0.8rem;
-    border: 1px solid var(--border);
+    border: 1px solid #3a3a3a;
     color: var(--accent3);
     text-decoration: none;
     font-size: 0.88rem;
@@ -649,8 +649,8 @@ const { title, description, requireAuth = true } = Astro.props;
   }
 
   .chain-chip:hover {
-    border-color: var(--accent3);
-    background: rgba(139, 233, 253, 0.05);
+    border-color: currentColor;
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
   .chain-chip[data-chain="ethereum"]  { color: var(--chain-ethereum); }
