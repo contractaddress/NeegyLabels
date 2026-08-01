@@ -25,7 +25,7 @@ const labels = lookupLabels({ type, limit: 10000 });
         {labels.map((l) => (
           <tr>
             <td class="address-cell">
-              <span class="address-mono" style="cursor:pointer;" onclick={`navigator.clipboard.writeText('${l.address}')`} title="click to copy">
+              <span class="address-mono copy-addr" style="cursor:pointer;" data-addr={l.address} title="click to copy">
                 <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
               </span>
             </td>
