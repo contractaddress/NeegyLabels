@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import { resolve } from 'node:path';
+import type { User } from './types.ts';
 
 const AUTH_DB_PATH = resolve(process.cwd(), 'src/data/auth.db');
 
@@ -17,13 +18,6 @@ function getDb(): Database.Database {
     )`);
   }
   return db;
-}
-
-export interface User {
-  id: string;
-  username: string;
-  password_hash: string;
-  created_at: string;
 }
 
 export function getUserByUsername(username: string): User | undefined {

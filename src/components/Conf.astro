@@ -1,0 +1,10 @@
+---
+export interface Props {
+  value: number | null;
+}
+
+const { value } = Astro.props;
+const color = value != null ? (value < 40 ? 'var(--conf-low)' : value < 70 ? 'var(--conf-mid)' : 'var(--conf-high)') : undefined;
+---
+
+<span style={color ? `color:${color};font-weight:600` : ''}>{value != null ? value : '—'}</span>

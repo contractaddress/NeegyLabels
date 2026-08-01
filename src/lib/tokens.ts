@@ -5,7 +5,7 @@ import {
   getTokenHash,
   touchToken,
   deleteToken,
-} from './db.ts';
+} from './db/tokens.ts';
 
 const TOKEN_PREFIX = 'n33gy';
 

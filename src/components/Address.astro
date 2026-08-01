@@ -1,0 +1,20 @@
+---
+export interface Props {
+  address: string;
+  link?: boolean;
+  toast?: boolean;
+}
+
+const { address, link = false, toast = false } = Astro.props;
+const truncated = `${address.slice(0, 6)}...${address.slice(-4)}`;
+---
+
+<span class="address-mono" style={toast ? 'cursor:pointer;' : ''} title={toast ? 'click to copy' : ''} onclick={toast ? `var t=document.createElement('span');t.textContent='copied!';t.style.cssText='position:fixed;background:var(--bg-elevated);color:var(--accent);border:1px solid var(--accent-dim);padding:0.2rem 0.5rem;font-size:0.7rem;pointer-events:none;z-index:9999;white-space:nowrap;opacity:0;transition:opacity 0.15s;';document.body.appendChild(t);var r=this.getBoundingClientRect();t.style.left=(r.left+r.width/2)+'px';t.style.top=(r.top-32)+'px';t.style.transform='translateX(-50%)';requestAnimationFrame(()=>{t.style.opacity=1});setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),200)},700);var a='${address}';try{navigator.clipboard.writeText(a)}catch(e){var i=document.createElement('textarea');i.value=a;i.style.position='fixed';i.style.left='-9999px';document.body.appendChild(i);i.select();document.execCommand('copy');i.remove()}` : ''}>
+  {link ? (
+    <a href={`/?address=${address}`}>
+      <span class="addr-prefix">{address.slice(0, 6)}</span>...<span class="addr-suffix">{address.slice(-4)}</span>
+    </a>
+  ) : (
+    <><span class="addr-prefix">{address.slice(0, 6)}</span>...<span class="addr-suffix">{address.slice(-4)}</span></>
+  )}
+</span>

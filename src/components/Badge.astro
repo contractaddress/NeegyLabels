@@ -1,0 +1,24 @@
+---
+export interface Props {
+  kind: 'chain' | 'type';
+  value: string;
+  href?: string;
+  target?: string;
+}
+
+const { kind, value, href, target = '_blank' } = Astro.props;
+---
+
+{href ? (
+  kind === 'chain' ? (
+    <a href={href} target={target} rel="noopener" class="badge" data-chain={value} style="text-decoration:none;">{value}</a>
+  ) : (
+    <a href={href} target={target} rel="noopener" class="badge" data-type={value} style="text-decoration:none;">{value}</a>
+  )
+) : (
+  kind === 'chain' ? (
+    <span class="badge" data-chain={value}>{value}</span>
+  ) : (
+    <span class="badge" data-type={value}>{value}</span>
+  )
+)}

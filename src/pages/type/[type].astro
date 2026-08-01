@@ -2,6 +2,9 @@
 import Base from '../../layouts/Base.astro';
 import { lookupLabels } from '../../lib/db.ts';
 import { explorerUrl } from '../../lib/explorers.ts';
+import Badge from '../../components/Badge.astro';
+import Address from '../../components/Address.astro';
+import Conf from '../../components/Conf.astro';
 
 const { type } = Astro.params;
 const labels = lookupLabels({ type, limit: 10000 });
@@ -25,22 +28,19 @@ const labels = lookupLabels({ type, limit: 10000 });
         {labels.map((l) => (
           <tr>
             <td class="address-cell">
-              <span class="address-mono" style="cursor:pointer;" title="click to copy" onclick={`var t=document.createElement('span');t.textContent='copied!';t.style.cssText='position:fixed;background:var(--bg-elevated);color:var(--accent);border:1px solid var(--accent-dim);padding:0.2rem 0.5rem;font-size:0.7rem;pointer-events:none;z-index:9999;white-space:nowrap;opacity:0;transition:opacity 0.15s;';document.body.appendChild(t);var r=this.getBoundingClientRect();t.style.left=(r.left+r.width/2)+'px';t.style.top=(r.top-32)+'px';t.style.transform='translateX(-50%)';requestAnimationFrame(()=>{t.style.opacity=1});setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),200)},700);var a='${l.address}';try{navigator.clipboard.writeText(a)}catch(e){var i=document.createElement('textarea');i.value=a;i.style.position='fixed';i.style.left='-9999px';document.body.appendChild(i);i.select();document.execCommand('copy');i.remove()}`}>
+              <span class="address-mono">
                 <span class="addr-prefix">{l.address.slice(0, 6)}</span>...<span class="addr-suffix">{l.address.slice(-4)}</span>
               </span>
             </td>
-            <td><span class="badge" data-chain={l.chain}>{l.chain}</span></td>
+            <td><Badge kind="chain" value={l.chain} /></td>
             <td>{l.label}</td>
-            <td style={l.confidence != null ? `color:var(--conf-${l.confidence < 40 ? 'low' : l.confidence < 70 ? 'mid' : 'high'});font-weight:600` : ''}>{l.confidence != null ? l.confidence : '—'}</td>
+            <td><Conf value={l.confidence} /></td>
             <td class="text-muted">{l.source}</td>
             <td class="text-muted">{l.added_at.slice(0, 10)}</td>
             <td>
-              {(() => {
-                const url = explorerUrl(l.chain, l.address);
-                return url ? (
-                  <a href={url} target="_blank" rel="noopener" class="badge" data-chain={l.chain} style="text-decoration:none;font-size:0.7rem;padding:0.1rem 0.4rem;" title="explorer">↗</a>
-                ) : null;
-              })()}
+              {explorerUrl(l.chain, l.address) && (
+                <a href={explorerUrl(l.chain, l.address)!} target="_blank" rel="noopener" class="badge" data-chain={l.chain} style="text-decoration:none;font-size:0.7rem;padding:0.1rem 0.4rem;" title="explorer">↗</a>
+              )}
             </td>
           </tr>
         ))}
