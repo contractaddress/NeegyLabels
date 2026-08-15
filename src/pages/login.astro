@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import { authenticate, setupUser, hasUsers } from '../lib/auth.ts';
 import { createHmac } from 'node:crypto';
 
+// fallback token: used when API_KEY is not set in .env (dev only, insecure)
 const SESSION_SECRET = import.meta.env.API_KEY ?? 'dev-secret-change-me';
 
 function signSession(username: string): string {

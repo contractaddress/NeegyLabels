@@ -14,7 +14,7 @@ function checkAuth(request: Request): boolean {
   const auth = request.headers.get('Authorization') ?? '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
 
-  if (envKey && token === envKey) return true;
+  if (envKey && token === envKey) return true; // fallback token: API_KEY used directly as Bearer
 
   return verifyToken(token);
 }

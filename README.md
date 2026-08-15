@@ -37,12 +37,19 @@ On first visit you'll be prompted to create an admin account. The admin panel (`
 **Before deploying**, generate a session secret. It signs login cookies and doubles as a fallback API token.
 
 ```bash
+cp .env.example .env
+openssl rand -hex 32   # copy the output into API_KEY=
+```
+
+Or directly:
+
+```bash
 echo "API_KEY=$(openssl rand -hex 32)" > .env
 ```
 
 | Env var | Purpose |
 |---------|---------|
-| `API_KEY` | Session signing secret. If unset, a hardcoded dev fallback (`dev-secret-change-me`) is used — **not secure for production**. |
+| `API_KEY` | Session signing secret. If unset, a hardcoded dev fallback (`dev-secret-change-me`) is used and a warning banner appears in the UI — **not secure for production**. |
 
 ### API tokens
 
