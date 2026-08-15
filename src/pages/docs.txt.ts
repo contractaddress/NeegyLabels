@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 export const GET: APIRoute = async () => {
   return new Response(`# NeegyLabels API
 
-Base URL: https://neegy.tools.lan/api/labels
+Base URL: http://localhost:4321/api/labels
 
 ## Auth
 
@@ -104,7 +104,7 @@ Response (404): { "error": "Label not found" }
 
 ## Chains
 
-ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain *
+ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain hyperliquid bitcoin tron *
 
 ## Types
 

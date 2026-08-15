@@ -1,43 +1,67 @@
-# Astro Starter Kit: Minimal
+# NeegyLabels
 
-```sh
-npm create astro@latest -- --template minimal
+On-chain label database for EVM addresses. Resolves raw hex addresses to human-readable labels (wallets, contracts, factories, bridges, CEX wallets) across multiple chains.
+
+## Features
+
+- **REST API** — look up labels by address, chain, or type; create, update, and delete labels
+- **Web UI** — terminal-inspired dark interface to browse and manage the database
+- **Multi-chain** — ethereum, base, bsc, arbitrum, optimism, polygon, avalanche, robinhood, unichain, hyperliquid, bitcoin, tron, and more
+- **Label types** — factory, wallet, dex, token, bridge, mixer, threatactor, and 15+ more
+- **Confidence scores** — optional 0–100 rating per label
+- **API key auth** — Bearer tokens generated via the admin panel, stored as SHA-256 hashes
+
+## Tech stack
+
+- [Astro](https://astro.build) (SSR)
+- SQLite via `better-sqlite3`
+- bcrypt for admin authentication
+- No frontend framework — plain Astro pages
+
+## Getting started
+
+```bash
+npm install
+npx astro dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Open `http://localhost:4321`.
 
-## 🚀 Project Structure
+On first visit you'll be prompted to create an admin account. The admin panel (`/admin`) is where you generate API tokens.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Configuration
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+| Env var | Purpose |
+|---------|---------|
+| `API_KEY` | Session signing secret (also a fallback API token) |
+
+```bash
+echo "API_KEY=$(openssl rand -hex 32)" > .env
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## API
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+See `/docs` in the web UI, or fetch the raw markdown:
 
-Any static assets, like images, can be placed in the `public/` directory.
+```bash
+curl http://localhost:4321/docs.txt
+```
 
-## 🧞 Commands
+### Quick reference
 
-All commands are run from the root of the project, from a terminal:
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/labels` | — | List / search (`?address=`, `?chain=`, `?type=`, `?label=`, `?limit=`, `?offset=`) |
+| POST | `/api/labels` | Bearer | Create a label |
+| PUT | `/api/labels?address=&chain=` | Bearer | Update a label |
+| DELETE | `/api/labels?address=&chain=` | Bearer | Delete a label |
+| GET | `/api/types` | — | List all label types |
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```bash
+curl -H "Authorization: Bearer n33gy<id>_<secret>" \
+  http://localhost:4321/api/labels?chain=ethereum
+```
 
-## 👀 Want to learn more?
+## License
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+MIT

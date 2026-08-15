@@ -1,0 +1,174 @@
+# NeegyLabels API
+
+On-chain label database for EVM addresses. Resolves raw hex addresses to human-readable labels across multiple chains.
+
+Base URL: `http://localhost:4321/api/labels`
+
+## Authentication
+
+Mutating endpoints (`POST`, `PUT`, `DELETE`) require a Bearer token. Tokens are generated via the `/admin` panel and stored as SHA-256 hashes.
+
+```
+Authorization: Bearer n33gy<id>_<secret>
+```
+
+Read-only endpoints (`GET`) are public and require no auth.
+
+## Endpoints
+
+### GET /api/labels
+
+List or search labels. Public.
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `address` | string | Lowercase 0x address |
+| `chain` | string | Chain key (see [Chains](#chains)) |
+| `type` | string | Label type (see [Types](#types)) |
+| `label` | string | Case-insensitive text search on label name |
+| `limit` | int | Max results per page, default 50 |
+| `offset` | int | Pagination offset |
+| `bulk` | bool | `true` to bypass pagination (for exports) |
+
+**Examples**
+
+```bash
+# All labels (paginated)
+GET /api/labels
+
+# By address
+GET /api/labels?address=0x1f98431c8ad98523631ae4a59f267346ea31f984
+
+# By chain
+GET /api/labels?chain=ethereum
+
+# By type
+GET /api/labels?type=mixer
+
+# Text search on label name
+GET /api/labels?label=uniswap
+
+# Bulk export (all labels of a type, no pagination)
+GET /api/labels?type=mixer&bulk=true
+```
+
+**Response**
+
+```json
+{
+  "labels": [
+    {
+      "address": "0x1f98431c8ad98523631ae4a59f267346ea31f984",
+      "chain": "ethereum",
+      "label": "Uniswap V3",
+      "type": "factory",
+      "source": "json",
+      "confidence": null,
+      "added_at": "2026-07-31 15:00:40"
+    }
+  ],
+  "total": 1
+}
+```
+
+The `total` field is the full count (used to know when pagination is exhausted). An unfiltered listing also includes a `chains` array of distinct chain keys.
+
+### POST /api/labels
+
+Create a label. Requires auth.
+
+```bash
+POST /api/labels
+Content-Type: application/json
+Authorization: Bearer n33gy...
+```
+
+```json
+{
+  "address": "0xd29c85f15df544ba632c9e25829fd29d767d7978",
+  "chain": "robinhood",
+  "label": "Across Protocol SpokePool",
+  "type": "bridge",
+  "source": "manual",
+  "confidence": 95
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `address` | yes | Lowercase 0x address |
+| `chain` | yes | Chain key, or `*` for cross-chain |
+| `label` | yes | Human-readable name |
+| `type` | no | Label type, default `unknown` |
+| `source` | no | Default `manual` |
+| `confidence` | no | 0–100 confidence score |
+
+**Response (201):** `{ "label": { ... } }`
+
+### PUT /api/labels
+
+Update a label. Requires auth. Identified by `address` + `chain` query params.
+
+```bash
+PUT /api/labels?address=0x...&chain=ethereum
+Content-Type: application/json
+Authorization: Bearer n33gy...
+```
+
+```json
+{
+  "label": "Updated Name",
+  "type": "dex",
+  "confidence": 95
+}
+```
+
+All body fields are optional — only provided fields are updated.
+
+**Response (200):** `{ "success": true }`
+**Response (404):** `{ "error": "Label not found" }`
+
+### DELETE /api/labels
+
+Delete a label. Requires auth. Identified by `address` + `chain` query params.
+
+```bash
+DELETE /api/labels?address=0x...&chain=ethereum
+Authorization: Bearer n33gy...
+```
+
+**Response (200):** `{ "success": true }`
+**Response (404):** `{ "error": "Label not found" }`
+
+### GET /api/types
+
+List all available label types. Public.
+
+```bash
+GET /api/types
+```
+
+**Response:**
+
+```json
+{ "types": ["factory", "wallet", "dex", "..."] }
+```
+
+## Errors
+
+| Status | Meaning |
+|--------|---------|
+| 400 | Missing required fields |
+| 401 | Missing or invalid auth |
+| 404 | Label not found |
+| 500 | Database error |
+
+## Chains
+
+`ethereum` `robinhood` `base` `bsc` `arbitrum` `optimism` `polygon` `avalanche` `unichain` `hyperliquid` `bitcoin` `tron` `*`
+
+`*` means the label applies cross-chain.
+
+## Types
+
+`factory` `wallet` `dex` `token` `locker` `router` `proxy` `governance` `oracle` `multisig` `lending` `staking` `positions` `multicall` `lens` `hook` `threatactor` `cex` `bridge` `mixer` `launcher` `other` `unknown`

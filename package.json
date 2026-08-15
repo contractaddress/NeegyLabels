@@ -1,7 +1,9 @@
 {
-  "name": "",
+  "name": "neegy-labels",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "On-chain label database for EVM addresses",
+  "license": "MIT",
   "engines": {
     "node": ">=22.12.0"
   },
