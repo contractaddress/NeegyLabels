@@ -1,8 +1,4 @@
-# NeegyLabels
-
-Your very own self-hosted Wallet Labeling database with an API & webUI
-
-![NeegyLabels showcase](public/showcase.png)
+![HERO CARD](public/hero.png)
 
 ## Features
 
@@ -12,6 +8,8 @@ Your very own self-hosted Wallet Labeling database with an API & webUI
 - **Label types**: factory, wallet, dex, token, bridge, mixer, threatactor, and 15+ more
 - **Confidence scores**: optional 0–100 rating per label
 - **API key auth**: Bearer tokens generated via the admin panel
+
+![NeegyLabels showcase](public/showcase.png)
 
 ## Getting started
 
