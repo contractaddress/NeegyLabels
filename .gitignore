@@ -29,5 +29,6 @@ internal/
 # database
 src/data/labels.db*
 src/data/auth.db*
+src/data/.session-secret
 
 AGENTS.md

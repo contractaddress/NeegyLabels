@@ -1,8 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-
-// fallback token: used when API_KEY is not set in .env (dev only, insecure)
-const SESSION_SECRET = import.meta.env.API_KEY ?? 'dev-secret-change-me';
+import { getSessionSecret } from './lib/secret.ts';
 
 function verifySession(cookie: string): string | null {
   const parts = cookie.split(':');
@@ -10,7 +8,7 @@ function verifySession(cookie: string): string | null {
   const [username, ts, sig] = parts;
   const payload = `${username}:${ts}`;
   const expected = Buffer.from(
-    createHmac('sha256', SESSION_SECRET).update(payload).digest('hex'),
+    createHmac('sha256', getSessionSecret()).update(payload).digest('hex'),
     'utf8',
   );
   const actual = Buffer.from(sig, 'utf8');

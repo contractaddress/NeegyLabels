@@ -1,5 +1,6 @@
 ---
 import BgStream from '../components/BgStream.astro';
+import { usingFallbackSecret } from '../lib/secret.ts';
 
 export interface Props {
   title: string;
@@ -8,7 +9,7 @@ export interface Props {
 }
 
 const { title, description, requireAuth = true } = Astro.props;
-const usingFallbackSecret = !import.meta.env.API_KEY;
+const isFallbackSecret = usingFallbackSecret();
 ---
 
 <!doctype html>
@@ -122,9 +123,9 @@ const usingFallbackSecret = !import.meta.env.API_KEY;
   </head>
   <body>
     <BgStream />
-    {usingFallbackSecret && (
+    {isFallbackSecret && (
       <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:#3a2a00;color:#f1fa8c;border-top:1px solid #f1fa8c;padding:0.5rem 1rem;font-size:0.8rem;text-align:center;">
-        ⚠ API_KEY is not set — using an insecure fallback session secret. Set <code>API_KEY</code> in <code>.env</code> (see <code>.env.example</code>).
+        ⚠ API_KEY is not set — using an auto-generated session secret (stored in <code>src/data/.session-secret</code>). Set <code>API_KEY</code> in <code>.env</code> for a fixed, portable secret.
       </div>
     )}
     <header>
