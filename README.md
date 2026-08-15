@@ -25,6 +25,12 @@ Your very own self-hosted Wallet labeling database
 ```bash
 git clone <remote repo> && cd NeegyLabels
 npm install
+
+# 1. Set up your environment — generate a session secret
+cp .env.example .env
+openssl rand -hex 32   # paste the output into API_KEY= in .env
+
+# 2. Start the dev server
 npx astro dev
 ```
 
@@ -32,16 +38,18 @@ Open `http://localhost:4321`.
 
 On first visit you'll be prompted to create an admin account. The admin panel (`/admin`) is where you generate API tokens.
 
+> **Note:** If you skip the `.env` setup, the app still runs but uses an insecure fallback secret and shows a warning banner in the UI. Do this before deploying anywhere.
+
 ## Configuration
 
-**Before deploying**, generate a session secret. It signs login cookies and doubles as a fallback API token.
+The `.env` file holds your secrets. A template is provided in `.env.example`:
 
 ```bash
 cp .env.example .env
 openssl rand -hex 32   # copy the output into API_KEY=
 ```
 
-Or directly:
+Or generate and set it in one step:
 
 ```bash
 echo "API_KEY=$(openssl rand -hex 32)" > .env
