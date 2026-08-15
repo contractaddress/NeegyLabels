@@ -1,26 +1,27 @@
 # NeegyLabels
 
-On-chain label database for EVM addresses. Resolves raw hex addresses to human-readable labels (wallets, contracts, factories, bridges, CEX wallets) across multiple chains.
+Your very own self-hosted Wallet labeling database
 
 ## Features
 
-- **REST API** — look up labels by address, chain, or type; create, update, and delete labels
-- **Web UI** — terminal-inspired dark interface to browse and manage the database
-- **Multi-chain** — ethereum, base, bsc, arbitrum, optimism, polygon, avalanche, robinhood, unichain, hyperliquid, bitcoin, tron, and more
-- **Label types** — factory, wallet, dex, token, bridge, mixer, threatactor, and 15+ more
-- **Confidence scores** — optional 0–100 rating per label
-- **API key auth** — Bearer tokens generated via the admin panel, stored as SHA-256 hashes
+- **REST API**: look up/add/delete labels and integrate directly into your other sleuthing tools.
+- **Web UI**: browse and manage the database 
+- **Multi-chain**: EVM (Solana planned)
+- **Label types**: factory, wallet, dex, token, bridge, mixer, threatactor, and 15+ more
+- **Confidence scores**: optional 0–100 rating per label
+- **API key auth**: Bearer tokens generated via the admin panel
 
 ## Tech stack
 
 - [Astro](https://astro.build) (SSR)
 - SQLite via `better-sqlite3`
 - bcrypt for admin authentication
-- No frontend framework — plain Astro pages
+- plain Astro pages
 
 ## Getting started
 
 ```bash
+git clone <remote repo> && cd NeegyLabels
 npm install
 npx astro dev
 ```
@@ -73,8 +74,12 @@ curl http://localhost:4321/docs.txt
 | GET | `/api/types` | — | List all label types |
 
 ```bash
+# List labels on a chain (auth required for mutations only)
 curl -H "Authorization: Bearer n33gy<id>_<secret>" \
   http://localhost:4321/api/labels?chain=ethereum
+
+# List all label types
+curl http://localhost:4321/api/types
 ```
 
 ## License
