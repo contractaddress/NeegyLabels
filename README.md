@@ -31,12 +31,27 @@ On first visit you'll be prompted to create an admin account. The admin panel (`
 
 ## Configuration
 
-| Env var | Purpose |
-|---------|---------|
-| `API_KEY` | Session signing secret (also a fallback API token) |
+**Before deploying**, generate a session secret. It signs login cookies and doubles as a fallback API token.
 
 ```bash
 echo "API_KEY=$(openssl rand -hex 32)" > .env
+```
+
+| Env var | Purpose |
+|---------|---------|
+| `API_KEY` | Session signing secret. If unset, a hardcoded dev fallback (`dev-secret-change-me`) is used — **not secure for production**. |
+
+### API tokens
+
+Two ways to authenticate against the API:
+
+1. **`API_KEY` directly** — use it as a Bearer token (the "fallback" token, handy for your own scripts).
+2. **`n33gy...` tokens** — generated in the admin panel (`/admin`), stored as SHA-256 hashes. Use these for other consumers so you can revoke them individually.
+
+```bash
+# Either works:
+curl -H "Authorization: Bearer $API_KEY" http://localhost:4321/api/labels
+curl -H "Authorization: Bearer n33gy<id>_<secret>" http://localhost:4321/api/labels
 ```
 
 ## API
