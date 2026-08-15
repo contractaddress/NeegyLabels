@@ -13,12 +13,6 @@ Your very own self-hosted Wallet Labeling database with an API & webUI
 - **Confidence scores**: optional 0–100 rating per label
 - **API key auth**: Bearer tokens generated via the admin panel
 
-## Tech stack
-
-- [Astro](https://astro.build) (SSR)
-- plain Astro pages
-- SQLite via `better-sqlite3`
-
 ## Getting started
 
 ```bash
