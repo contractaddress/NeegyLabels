@@ -34,6 +34,17 @@ On first visit you'll be prompted to create an admin account. The admin panel (`
 
 > **Note:** `API_KEY` is optional but recommended. If you skip it, the app auto-generates a random session secret (stored in `src/data/.session-secret`).
 
+### Backing up the database
+
+Your labels live in `src/data/labels.db`. Back it up regularly:
+
+```bash
+# safe live backup (works while the server is running)
+sqlite3 src/data/labels.db ".backup 'labels.db.backup'"
+```
+
+Or stop the server and copy `src/data/labels.db` directly. The `-wal` / `-shm` sidecar files are temporary and don't need backing up.
+
 ### API tokens
 
 Two ways to authenticate against the API:
