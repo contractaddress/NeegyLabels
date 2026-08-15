@@ -32,7 +32,7 @@ Open `http://localhost:4321`.
 
 On first visit you'll be prompted to create an admin account. The admin panel (`/admin`) is where you generate API tokens.
 
-> **Note:** `API_KEY` is optional but recommended. If you skip it, the app auto-generates a random session secret (stored in `src/data/.session-secret`). Sessions stay secure, but you lose two conveniences: you can't use `API_KEY` directly as a Bearer token (use `/admin` tokens instead), and sessions reset whenever that file is deleted (e.g. a fresh deploy).
+> **Note:** `API_KEY` is optional but recommended. If you skip it, the app auto-generates a random session secret (stored in `src/data/.session-secret`).
 
 ### API tokens
 
