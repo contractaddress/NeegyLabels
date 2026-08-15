@@ -100,6 +100,41 @@ const isFallbackSecret = usingFallbackSecret();
           if (badge) badge.textContent = '0';
         });
 
+        document.addEventListener('click', (e) => {
+          const el = e.target.closest ? e.target.closest('.copy-addr') : null;
+          if (!el) return;
+          const addr = el.dataset.addr;
+          if (!addr) return;
+
+          const fallbackCopy = (text) => {
+            const i = document.createElement('textarea');
+            i.value = text;
+            i.style.position = 'fixed';
+            i.style.left = '-9999px';
+            document.body.appendChild(i);
+            i.select();
+            document.execCommand('copy');
+            i.remove();
+          };
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(addr).catch(() => fallbackCopy(addr));
+          } else {
+            fallbackCopy(addr);
+          }
+
+          const t = document.createElement('span');
+          t.textContent = 'copied!';
+          t.style.cssText = 'position:fixed;background:var(--bg-elevated);color:var(--accent);border:1px solid var(--accent-dim);padding:0.2rem 0.5rem;font-size:0.7rem;pointer-events:none;z-index:9999;white-space:nowrap;opacity:0;transition:opacity 0.15s;';
+          document.body.appendChild(t);
+          const r = el.getBoundingClientRect();
+          t.style.left = (r.left + r.width / 2) + 'px';
+          t.style.top = (r.top - 32) + 'px';
+          t.style.transform = 'translateX(-50%)';
+          requestAnimationFrame(() => { t.style.opacity = 1; });
+          setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 200); }, 700);
+        });
+
         const streamKey = 'neegy_stream_enabled';
         const toggleBtn = document.getElementById('toggle-stream');
         const streamEl = document.querySelector('.bg-stream');

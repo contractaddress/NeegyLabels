@@ -1,6 +1,16 @@
 import { getDb } from './core.ts';
 import type { Label, LabelInput, LabelUpdate } from '../types.ts';
 
+const DANGEROUS_ADDR_CHARS = /['"<>`\x00-\x1f\x7f]/;
+
+function normalizeAddress(address: string): string {
+  const a = address.toLowerCase();
+  if (DANGEROUS_ADDR_CHARS.test(a)) {
+    throw new Error('Invalid address: contains disallowed characters');
+  }
+  return a;
+}
+
 export function lookupLabels(params: {
   address?: string;
   chain?: string;
@@ -33,11 +43,12 @@ export function lookupByAddress(address: string): Label[] {
 
 export function insertLabel(input: LabelInput): Label {
   const d = getDb();
+  const address = normalizeAddress(input.address);
   d.prepare(
     `INSERT OR REPLACE INTO labels (address, chain, label, type, source, confidence, added_at)
      VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
-  ).run(input.address.toLowerCase(), input.chain, input.label, input.type ?? 'unknown', input.source ?? 'manual', input.confidence ?? null);
-  return lookupLabels({ address: input.address, chain: input.chain })[0];
+  ).run(address, input.chain, input.label, input.type ?? 'unknown', input.source ?? 'manual', input.confidence ?? null);
+  return lookupLabels({ address, chain: input.chain })[0];
 }
 
 export function deleteLabel(address: string, chain: string): boolean {
