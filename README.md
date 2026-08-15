@@ -17,12 +17,14 @@ Your very own self-hosted Wallet Labeling database with an API & webUI
 
 ```bash
 git clone https://github.com/contractaddress/NeegyLabels.git && cd NeegyLabels
-npm install
 
 # generate a session secret into .env
 echo "API_KEY=$(openssl rand -hex 32)" > .env
+```
 
-# 2. Start the dev server
+Start the dev server
+```
+npm install
 npx astro dev
 ```
 
@@ -38,6 +40,8 @@ Two ways to authenticate against the API:
 
 1. **`API_KEY` directly** — use it as a Bearer token (the "fallback" token, handy for your own scripts).
 2. **`n33gy...` tokens** — generated in the admin panel (`/admin`), stored as SHA-256 hashes. Use these for other tools/consumers such as your agents for example so you can revoke them individually.
+
+> Note: currently querying with GET does not require a Bearer for convinience.
 
 ```bash
 # Either works:
