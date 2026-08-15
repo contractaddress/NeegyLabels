@@ -18,7 +18,6 @@ Your very own self-hosted Wallet Labeling database with an API & webUI
 - [Astro](https://astro.build) (SSR)
 - plain Astro pages
 - SQLite via `better-sqlite3`
-- bcrypt for admin auth
 
 ## Getting started
 
