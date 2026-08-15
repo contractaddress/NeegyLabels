@@ -1,6 +1,6 @@
 # NeegyLabels
 
-Your very own self-hosted Wallet labeling database
+Your very own self-hosted Wallet Labeling database with an API & webUI
 
 ![NeegyLabels showcase](public/showcase.png)
 
@@ -23,7 +23,7 @@ Your very own self-hosted Wallet labeling database
 ## Getting started
 
 ```bash
-git clone <remote repo> && cd NeegyLabels
+git clone https://github.com/contractaddress/NeegyLabels.git && cd NeegyLabels
 npm install
 
 # generate a session secret into .env

@@ -23,7 +23,11 @@ internal/
 
 # jetbrains setting folder
 .idea/
+.vscode/
+
 
 # database
 src/data/labels.db*
 src/data/auth.db*
+
+AGENTS.md
