@@ -32,14 +32,14 @@ Open `http://localhost:4321`.
 
 On first visit you'll be prompted to create an admin account. The admin panel (`/admin`) is where you generate API tokens.
 
-> **Note:** If you skip the `.env` setup, the app still runs but uses an insecure fallback secret and shows a warning banner in the UI. Do this before deploying anywhere.
+> **Note:** `API_KEY` is optional but recommended. If you skip it, the app auto-generates a random session secret (stored in `src/data/.session-secret`). Sessions stay secure, but you lose two conveniences: you can't use `API_KEY` directly as a Bearer token (use `/admin` tokens instead), and sessions reset whenever that file is deleted (e.g. a fresh deploy).
 
 ### API tokens
 
 Two ways to authenticate against the API:
 
-1. **`API_KEY` directly** — use it as a Bearer token (the "fallback" token, handy for your own scripts).
-2. **`n33gy...` tokens** — generated in the admin panel (`/admin`), stored as SHA-256 hashes. Use these for other tools/consumers such as your agents for example so you can revoke them individually.
+1. **`API_KEY` directly** — use the `.env` value as a Bearer token (handy for your own scripts). Only available when `API_KEY` is set.
+2. **`n33gy...` tokens** — generated in the admin panel (`/admin`), stored as SHA-256 hashes. Use these for other tools/consumers, such as your agents, so you can revoke them individually.
 
 > Note: currently querying with GET does not require a Bearer for convinience.
 

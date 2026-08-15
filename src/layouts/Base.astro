@@ -124,8 +124,8 @@ const isFallbackSecret = usingFallbackSecret();
   <body>
     <BgStream />
     {isFallbackSecret && (
-      <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:#3a2a00;color:#f1fa8c;border-top:1px solid #f1fa8c;padding:0.5rem 1rem;font-size:0.8rem;text-align:center;">
-        ⚠ API_KEY is not set — using an auto-generated session secret (stored in <code>src/data/.session-secret</code>). Set <code>API_KEY</code> in <code>.env</code> for a fixed, portable secret.
+      <div style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:#141414;color:var(--text-muted);border-top:1px solid var(--border);padding:0.5rem 1rem;font-size:0.8rem;text-align:center;">
+        API_KEY is not set — using an auto-generated session secret. Set <code>API_KEY</code> in <code>.env</code> to use it directly as a Bearer token and keep sessions across redeploys.
       </div>
     )}
     <header>

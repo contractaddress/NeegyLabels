@@ -8,7 +8,7 @@ Base URL: `http://localhost:4321/api/labels`
 
 Mutating endpoints (`POST`, `PUT`, `DELETE`) require a Bearer token. There are two ways to authenticate:
 
-1. **`API_KEY`** — the session secret from your `.env`. Works directly as a Bearer token.
+1. **`API_KEY`** — the `.env` value (also the session secret). Works directly as a Bearer token when set.
 2. **`n33gy...` tokens** — generated via the `/admin` panel, stored as SHA-256 hashes. Use these for other consumers so they can be revoked individually.
 
 ```
