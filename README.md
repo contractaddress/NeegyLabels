@@ -8,7 +8,7 @@ Your very own self-hosted Wallet labeling database
 
 - **REST API**: look up/add/delete labels and integrate directly into any tool.
 - **Web UI**: browse and manage the database 
-- **Multi-chain**: All major EVM chains (Solana planned)
+- **Multi-chain**: All major EVM chains & BTC (Solana planned)
 - **Label types**: factory, wallet, dex, token, bridge, mixer, threatactor, and 15+ more
 - **Confidence scores**: optional 0–100 rating per label
 - **API key auth**: Bearer tokens generated via the admin panel
