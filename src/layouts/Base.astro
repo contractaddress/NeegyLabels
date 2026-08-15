@@ -17,7 +17,8 @@ const { title, description, requireAuth = true } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title} — NeegyLabels</title>
     {description && <meta name="description" content={description} />}
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='24' font-size='24'>NL</text></svg>" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
         const storageKey = 'neegy_hidden_chains';

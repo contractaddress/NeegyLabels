@@ -2,6 +2,8 @@
 
 Your very own self-hosted Wallet labeling database
 
+![NeegyLabels showcase](public/showcase.png)
+
 ## Features
 
 - **REST API**: look up/add/delete labels and integrate directly into your other sleuthing tools.
