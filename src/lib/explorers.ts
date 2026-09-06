@@ -7,7 +7,7 @@ const EXPLORERS: Record<string, string> = {
   polygon: 'https://polygonscan.com/address/',
   avalanche: 'https://snowtrace.io/address/',
   unichain: 'https://uniscan.xyz/address/',
-  robinhood: 'https://robinhoodchain.blockscout.com/address/',
+  robinhood: 'https://rh-scan.com/address/',
   hyperliquid: 'https://hyperliquid.cloud/address/',
   bitcoin: 'https://mempool.space/address/',
   tron: 'https://tronscan.org/#/address/',
