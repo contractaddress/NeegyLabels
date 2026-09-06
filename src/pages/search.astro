@@ -33,13 +33,13 @@ const results = query ? lookupLabels({ label: query, limit: 500 }) : [];
       {results.length === 0 ? (
         <div class="empty-state"><p>no labels matching <strong>{query}</strong></p></div>
       ) : (
-        <table>
+        <table class="sortable">
           <thead>
-            <tr><th>Address</th><th>Chain</th><th>Label</th><th>Type</th><th>Conf</th><th>Added</th></tr>
+            <tr><th data-sort="addr">Address</th><th data-sort="chain">Chain</th><th data-sort="label">Label</th><th data-sort="type">Type</th><th data-sort="conf">Conf</th><th data-sort="added">Added</th></tr>
           </thead>
           <tbody>
             {results.map((l) => (
-              <tr>
+              <tr data-addr={l.address} data-chain={l.chain} data-label={l.label} data-type={l.type} data-conf={l.confidence} data-added={l.added_at}>
                 <td class="address-cell">
                   <span class="address-mono">
                     <a href={`/?address=${l.address}`}>

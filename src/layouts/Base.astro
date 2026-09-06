@@ -153,6 +153,35 @@ const isFallbackSecret = usingFallbackSecret();
             applyStream(!isOn);
           });
         }
+
+        document.querySelectorAll('table.sortable').forEach((table) => {
+          const headers = Array.from(table.querySelectorAll('th[data-sort]'));
+          const isNum = (v) => v !== '' && /^-?\d+(\.\d+)?$/.test(v);
+          headers.forEach((th) => {
+            th.addEventListener('click', () => {
+              const tbody = table.querySelector('tbody');
+              if (!tbody) return;
+              const key = th.dataset.sort;
+              const dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+              headers.forEach((o) => { if (o !== th) delete o.dataset.dir; });
+              th.dataset.dir = dir;
+
+              const rows = Array.from(tbody.querySelectorAll('tr')).filter((r) => key in (r.dataset || {}));
+              rows.sort((a, b) => {
+                const av = a.dataset[key];
+                const bv = b.dataset[key];
+                if (av === undefined && bv === undefined) return 0;
+                if (av === undefined) return 1;
+                if (bv === undefined) return -1;
+                let cmp;
+                if (isNum(av) && isNum(bv)) cmp = parseFloat(av) - parseFloat(bv);
+                else cmp = String(av).localeCompare(String(bv), undefined, { numeric: true, sensitivity: 'base' });
+                return dir === 'asc' ? cmp : -cmp;
+              });
+              rows.forEach((r) => tbody.appendChild(r));
+            });
+          });
+        });
       });
     </script>
   </head>
@@ -424,6 +453,25 @@ const isFallbackSecret = usingFallbackSecret();
     letter-spacing: 0.08em;
     border-bottom: 1px solid var(--border-active);
     background: var(--bg-elevated);
+  }
+
+  table.sortable th[data-sort] {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  table.sortable th[data-sort]:hover {
+    color: var(--text-bright);
+  }
+
+  table.sortable th[data-sort][data-dir="asc"]::after {
+    content: ' ↑';
+    color: var(--accent);
+  }
+
+  table.sortable th[data-sort][data-dir="desc"]::after {
+    content: ' ↓';
+    color: var(--accent);
   }
 
   tbody td {

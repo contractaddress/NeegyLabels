@@ -78,13 +78,13 @@ const totalTypes = typeCounts.length;
       {searchResults.length === 0 ? (
         <div class="empty-state"><p>no labels found</p></div>
       ) : (
-        <table>
+        <table class="sortable">
           <thead>
-            <tr><th>Chain</th><th>Label</th><th>Type</th><th>Conf</th><th>Source</th><th>Added</th><th></th></tr>
+            <tr><th data-sort="chain">Chain</th><th data-sort="label">Label</th><th data-sort="type">Type</th><th data-sort="conf">Conf</th><th data-sort="source">Source</th><th data-sort="added">Added</th><th></th></tr>
           </thead>
           <tbody>
             {searchResults.map((l) => (
-              <tr>
+              <tr data-chain={l.chain} data-label={l.label} data-type={l.type} data-conf={l.confidence} data-source={l.source} data-added={l.added_at}>
                 {(() => {
                   const url = explorerUrl(l.chain, l.address);
                   return (

@@ -18,13 +18,13 @@ const labels = lookupLabels({ type, limit: 10000 });
   {labels.length === 0 ? (
     <div class="empty-state"><p>no labels of type <strong>{type}</strong></p></div>
   ) : (
-    <table>
+    <table class="sortable">
       <thead>
-        <tr><th>Address</th><th>Chain</th><th>Label</th><th>Conf</th><th>Source</th><th>Added</th><th></th></tr>
+        <tr><th data-sort="addr">Address</th><th data-sort="chain">Chain</th><th data-sort="label">Label</th><th data-sort="conf">Conf</th><th data-sort="source">Source</th><th data-sort="added">Added</th><th></th></tr>
       </thead>
       <tbody>
         {labels.map((l) => (
-          <tr>
+          <tr data-addr={l.address} data-chain={l.chain} data-label={l.label} data-conf={l.confidence} data-source={l.source} data-added={l.added_at}>
             <td class="address-cell">
               <Address address={l.address} toast />
             </td>

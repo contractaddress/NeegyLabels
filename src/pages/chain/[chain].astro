@@ -55,21 +55,21 @@ const allChains = getDistinctChains();
       <p><a href="/add" class="btn">add label →</a></p>
     </div>
   ) : (
-    <table>
+    <table class="sortable">
       <thead>
         <tr>
-          <th>Address</th>
-          <th>Label</th>
-          <th>Type</th>
-          <th>Conf</th>
-          <th>Source</th>
-          <th>Added</th>
+          <th data-sort="addr">Address</th>
+          <th data-sort="label">Label</th>
+          <th data-sort="type">Type</th>
+          <th data-sort="conf">Conf</th>
+          <th data-sort="source">Source</th>
+          <th data-sort="added">Added</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {labels.map((l) => (
-          <tr>
+          <tr data-addr={l.address} data-label={l.label} data-type={l.type} data-conf={l.confidence} data-source={l.source} data-added={l.added_at}>
             <td class="address-cell">
               <Address address={l.address} toast />
             </td>
