@@ -7,7 +7,10 @@ Base URL: http://localhost:4321/api/labels
 
 ## Auth
 
-Bearer token in Authorization header. Tokens generated via /admin panel.
+Mutating endpoints require a Bearer token. Two options:
+
+1. n33gy... tokens — generated via the /admin panel (revocable per-token).
+2. API_KEY — the value from your .env, used directly as a Bearer token.
 
 Authorization: Bearer n33gy<id>_<secret>
 
@@ -21,6 +24,8 @@ List or search labels. Public (no auth required).
 |-------|------|-------------|
 | address | string | Lowercase 0x address |
 | chain | string | Chain key (ethereum, base, bsc, etc) |
+| type | string | Filter by label type |
+| label | string | Text search on label name |
 | limit | int | Max results, default 50 |
 | offset | int | Pagination offset |
 | bulk | bool | Set true to bypass pagination (for exports) |
@@ -34,6 +39,9 @@ By address:
 By chain:
   GET /api/labels?chain=ethereum
 
+By label:
+  GET /api/labels?label=uniswap
+
 By type (bulk export):
   GET /api/labels?type=mixer&bulk=true
 
@@ -42,6 +50,8 @@ Response:
     "labels": [{ "address": "...", "chain": "...", "label": "...", "type": "...", "source": "...", "confidence": null, "added_at": "..." }],
     "total": 1
   }
+
+An unfiltered listing also includes a "chains" array of distinct chain keys.
 
 ### POST /api/labels
 
@@ -94,6 +104,15 @@ Body (JSON — all fields optional):
 
 Response (200): { "success": true }
 Response (404): { "error": "Label not found" }
+
+### GET /api/types
+
+List all supported label types. Public (no auth required).
+
+  GET /api/types
+
+Response:
+  { "types": ["factory", "wallet", "dex", "..."] }
 
 ## Errors
 
