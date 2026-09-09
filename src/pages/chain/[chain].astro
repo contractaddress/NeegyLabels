@@ -4,11 +4,6 @@ import Address from '../../components/Address.astro';
 import { lookupLabels, getDistinctChains, getChainCounts } from '../../lib/db.ts';
 import { explorerUrl } from '../../lib/explorers.ts';
 
-export function getStaticPaths() {
-  const chains = getDistinctChains();
-  return chains.map((chain) => ({ params: { chain } }));
-}
-
 export const prerender = false;
 
 const { chain } = Astro.params;
@@ -22,7 +17,7 @@ const allChains = getDistinctChains();
 
   <section>
     <div style="display:flex;justify-content:flex-end;margin-bottom:0.4rem;">
-      <button type="button" class="edit-toggle-btn">✎ edit</button>
+      <a href="/manage" class="btn" style="font-size:0.75rem;padding:0.3rem 0.65rem;">manage</a>
     </div>
     <div class="grid-2">
       {allChains.map((c) => (
@@ -31,10 +26,6 @@ const allChains = getDistinctChains();
           <span class="count">{chainCounts.find((x) => x.chain === c)?.count ?? 0}</span>
         </a>
       ))}
-    </div>
-    <div id="hidden-panel" style="display:none;margin-top:0.5rem;font-size:0.8rem;">
-      <span class="text-muted"><span id="hidden-count">0</span> chains hidden — </span>
-      <a href="#" id="show-all-btn" style="color:var(--accent);">show all</a>
     </div>
   </section>
 

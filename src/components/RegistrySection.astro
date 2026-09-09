@@ -1,0 +1,198 @@
+---
+interface Entry {
+  name: string;
+  color: string;
+  count: number;
+}
+
+interface Props {
+  kind: 'chain' | 'type';
+  entries: Entry[];
+}
+
+const { kind, entries } = Astro.props;
+const plural = `${kind}s`;
+const pattern = kind === 'chain' ? '(\\*|[a-z0-9][a-z0-9_-]{0,49})' : '[a-z0-9][a-z0-9_-]{0,49}';
+const example = kind === 'chain' ? 'e.g. ethereum' : 'e.g. vault';
+const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
+---
+
+<section class="section" data-archive-manager={kind}>
+  <div class="section-header registry-header">
+    <div>
+      <h2>{plural}</h2>
+      <span class="text-muted">{entries.length} registered</span>
+    </div>
+    <div class="registry-actions">
+      <button type="button" data-show-archived={kind} class="quiet-btn">show archived (0)</button>
+      <button type="button" data-add-toggle={kind} aria-expanded="false">+ add</button>
+    </div>
+  </div>
+
+  <div data-add-panel={kind} class="add-panel" hidden>
+    <form method="POST" class="add-form">
+      <input type="hidden" name="action" value={`add-${kind}`} />
+      <div class="form-group grow">
+        <label for={`new-${kind}-name`}>{kind} name</label>
+        <input id={`new-${kind}-name`} name="name" type="text" pattern={pattern} maxlength="50" placeholder={example} required autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label for={`new-${kind}-color`}>color</label>
+        <input id={`new-${kind}-color`} name="color" type="color" value={defaultColor} required />
+      </div>
+      <button type="submit">add_{kind}()</button>
+    </form>
+  </div>
+
+  <div class="registry-grid">
+    {entries.map(({ name, color, count }) => (
+      <article
+        class={`registry-card ${kind}-chip`}
+        data-type={kind === 'type' ? name : undefined}
+        data-chain={kind === 'chain' ? name : undefined}
+      >
+        <div class="card-header">
+          <a href={`/${kind}/${name}`} class="badge" data-type={kind === 'type' ? name : undefined} data-chain={kind === 'chain' ? name : undefined}>{name}</a>
+          <span class="count">{count} {count === 1 ? 'label' : 'labels'}</span>
+        </div>
+        <form method="POST" class="color-controls" data-color-form>
+          <input type="hidden" name="action" value={`${kind}-color`} />
+          <input type="hidden" name="name" value={name} />
+          <input type="color" name="color" value={color} aria-label={`Color for ${name}`} title={`Change ${name} color`} />
+          <code>{color}</code>
+          <span class="save-status" data-save-status aria-live="polite"></span>
+          <button type="button" class={`quiet-btn ${kind}-archive-btn`}>archive</button>
+        </form>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .registry-header {
+    align-items: flex-start;
+  }
+
+  .registry-header h2 {
+    margin-bottom: 0;
+  }
+
+  .registry-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .quiet-btn {
+    padding: 0.3rem 0.65rem;
+    border-color: var(--border-active);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+
+  .add-panel {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px dashed var(--accent-dim);
+    background: color-mix(in srgb, var(--accent) 3%, transparent);
+  }
+
+  .add-form {
+    max-width: none;
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+  }
+
+  .grow {
+    flex: 1;
+  }
+
+  input[type='color'] {
+    width: 3rem;
+    min-height: 2.55rem;
+    padding: 0.2rem;
+    cursor: pointer;
+  }
+
+  .registry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .registry-card,
+  .registry-card.chain-chip {
+    display: block;
+    border: 1px solid #363636;
+    padding: 0.75rem;
+    background: rgba(10, 10, 10, 0.4);
+    transition: border-color 0.15s, opacity 0.15s;
+  }
+
+  .registry-card:hover {
+    border-color: currentColor;
+  }
+
+  .registry-card.is-archived {
+    color: var(--text-muted) !important;
+    border-style: dashed;
+    opacity: 0.6;
+  }
+
+  .registry-card.is-archived .badge {
+    color: var(--text-muted) !important;
+    border-color: var(--text-muted) !important;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .count,
+  .color-controls code,
+  .save-status {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+
+  .save-status {
+    min-width: 3.5rem;
+  }
+
+  .save-status.error {
+    color: var(--danger);
+  }
+
+  .color-controls {
+    max-width: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .color-controls button {
+    margin-left: auto;
+  }
+
+  @media (max-width: 620px) {
+    .registry-header,
+    .add-form {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .registry-actions {
+      flex-wrap: wrap;
+    }
+
+    .registry-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

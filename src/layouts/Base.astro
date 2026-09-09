@@ -1,5 +1,6 @@
 ---
 import BgStream from '../components/BgStream.astro';
+import { getAllChains, getAllTypes } from '../lib/db.ts';
 import { usingFallbackSecret } from '../lib/secret.ts';
 
 export interface Props {
@@ -10,6 +11,14 @@ export interface Props {
 
 const { title, description, requireAuth = true } = Astro.props;
 const isFallbackSecret = usingFallbackSecret();
+const registryStyles = [
+  ...getAllChains().map(({ name, color }) =>
+    `.badge[data-chain="${name}"] { border-color: ${color}; color: ${color}; }\n.chain-chip[data-chain="${name}"] { color: ${color}; }`,
+  ),
+  ...getAllTypes().map(({ name, color }) =>
+    `.badge[data-type="${name}"] { border-color: ${color}; color: ${color}; }\n.type-chip[data-type="${name}"] { color: ${color}; }`,
+  ),
+].join('\n');
 ---
 
 <!doctype html>
@@ -21,84 +30,70 @@ const isFallbackSecret = usingFallbackSecret();
     {description && <meta name="description" content={description} />}
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <style is:inline set:html={registryStyles}></style>
     <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
-        const storageKey = 'neegy_hidden_chains';
-        const hidden = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
-
-        function filterChains() {
-          document.querySelectorAll('.chain-chip').forEach(chip => {
-            const c = chip.dataset.chain;
-            if (c && hidden.has(c)) chip.style.display = 'none';
-            else chip.style.display = '';
-          });
-          const badge = document.getElementById('hidden-count');
-          if (badge) badge.textContent = hidden.size;
+        function storedSet(key) {
+          try {
+            const value = JSON.parse(localStorage.getItem(key) || '[]');
+            return new Set(Array.isArray(value) ? value : []);
+          } catch {
+            return new Set();
+          }
         }
 
-        filterChains();
+        function setupArchive(kind) {
+          const storageKey = `neegy_hidden_${kind}s`;
+          const hidden = storedSet(storageKey);
+          const itemSelector = `.${kind}-chip[data-${kind}]`;
+          let showArchived = false;
 
-        document.querySelectorAll('.edit-toggle-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const section = btn.closest('section, .section') || btn.parentElement?.parentElement;
-            const chips = (section || document).querySelectorAll('.chain-chip');
-            const hiddenPanel = document.getElementById('hidden-panel');
-            const isEditing = chips[0]?.classList.toggle('editing');
+          function render() {
+            document.querySelectorAll(itemSelector).forEach(item => {
+              const name = item.dataset[kind];
+              const archived = name && hidden.has(name);
+              const isManagerCard = Boolean(item.closest(`[data-archive-manager="${kind}"]`));
+              item.classList.toggle('is-archived', Boolean(archived));
+              item.style.display = archived && !(isManagerCard && showArchived) ? 'none' : '';
 
-            btn.textContent = isEditing ? 'done' : '✎ edit';
-
-            chips.forEach(chip => {
-              const countEl = chip.querySelector('.count');
-              if (countEl) countEl.style.display = isEditing ? 'none' : '';
-
-              if (hidden.has(chip.dataset.chain || '')) return;
-
-              if (isEditing) {
-                const hideBtn = document.createElement('span');
-                hideBtn.className = 'chain-hide-btn';
-                hideBtn.textContent = '✕';
-                hideBtn.title = 'hide this chain';
-                hideBtn.onclick = (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const c = chip.dataset.chain;
-                  if (c) {
-                    hidden.add(c);
-                    localStorage.setItem(storageKey, JSON.stringify([...hidden]));
-                    chip.style.display = 'none';
-                    if (hiddenPanel) hiddenPanel.style.display = '';
-                    const badge = document.getElementById('hidden-count');
-                    if (badge) badge.textContent = hidden.size;
-                  }
-                };
-                chip.appendChild(hideBtn);
-              } else {
-                const existing = chip.querySelector('.chain-hide-btn');
-                if (existing) existing.remove();
-                const countEl = chip.querySelector('.count');
-                if (countEl) countEl.style.display = '';
-              }
+              const archiveBtn = item.querySelector(`.${kind}-archive-btn`);
+              if (archiveBtn) archiveBtn.textContent = archived ? 'restore' : 'archive';
             });
 
-            if (hiddenPanel) hiddenPanel.style.display = isEditing && hidden.size > 0 ? '' : 'none';
-          });
-        });
+            document.querySelectorAll(`#${kind}-list option`).forEach(option => {
+              const archived = hidden.has(option.value);
+              option.hidden = archived;
+              option.disabled = archived;
+            });
 
-        document.getElementById('show-all-btn')?.addEventListener('click', () => {
-          hidden.clear();
-          localStorage.setItem(storageKey, '[]');
-          document.querySelectorAll('.chain-chip').forEach(chip => {
-            chip.style.display = '';
-            const btn = chip.querySelector('.chain-hide-btn');
-            if (btn) btn.remove();
-            const countEl = chip.querySelector('.count');
-            if (countEl) countEl.style.display = '';
+            const showBtn = document.querySelector(`[data-show-archived="${kind}"]`);
+            if (showBtn) {
+              showBtn.textContent = showArchived ? 'hide archived' : `show archived (${hidden.size})`;
+              showBtn.disabled = hidden.size === 0;
+            }
+          }
+
+          render();
+
+          document.querySelectorAll(`.${kind}-archive-btn`).forEach(btn => {
+            btn.addEventListener('click', () => {
+              const name = btn.closest(itemSelector)?.dataset[kind];
+              if (!name) return;
+              if (hidden.has(name)) hidden.delete(name);
+              else hidden.add(name);
+              localStorage.setItem(storageKey, JSON.stringify([...hidden]));
+              render();
+            });
           });
-          const panel = document.getElementById('hidden-panel');
-          if (panel) panel.style.display = 'none';
-          const badge = document.getElementById('hidden-count');
-          if (badge) badge.textContent = '0';
-        });
+
+          document.querySelector(`[data-show-archived="${kind}"]`)?.addEventListener('click', () => {
+            showArchived = !showArchived;
+            render();
+          });
+        }
+
+        setupArchive('chain');
+        setupArchive('type');
 
         document.addEventListener('click', (e) => {
           const el = e.target.closest ? e.target.closest('.copy-addr') : null;
@@ -198,7 +193,7 @@ const isFallbackSecret = usingFallbackSecret();
       </a>
       <nav>
         <a href="/add">/add</a>
-        <a href="/chain">/chain</a>
+        <a href="/manage">/manage</a>
         <a href="/docs">/docs</a>
         <a href="/admin">/admin</a>
         <button id="toggle-stream" title="toggle background" style="background:none;border:1px solid var(--border);color:var(--text-muted);padding:0.15rem 0.45rem;font-size:0.7rem;cursor:pointer;margin-left:1.5rem;">◉</button>
@@ -233,44 +228,9 @@ const isFallbackSecret = usingFallbackSecret();
     --accent3: #8be9fd;
     --warn: #f1fa8c;
     --danger: #ff5555;
-    --chain-ethereum: #627eea;
-    --chain-robinhood: #00c805;
-    --chain-base: #0052ff;
-    --chain-bsc: #f0b90b;
-    --chain-arbitrum: #28a0f0;
-    --chain-optimism: #ff0420;
-    --chain-polygon: #8247e5;
-    --chain-avalanche: #e84142;
-    --chain-unichain: #ff007a;
-    --chain-hyperliquid: #19edb0;
-    --chain-bitcoin: #f7931a;
-    --chain-tron: #eb0029;
-    --type-factory: #ff79c6;
-    --type-wallet: #50fa7b;
-    --type-dex: #7c3aed;
-    --type-token: #f59e0b;
-    --type-locker: #14b8a6;
-    --type-router: #06b6d4;
-    --type-proxy: #a855f7;
-    --type-governance: #22c55e;
-    --type-oracle: #f97316;
-    --type-multisig: #ec4899;
-    --type-lending: #3b82f6;
-    --type-staking: #eab308;
-    --type-positions: #ef4444;
-    --type-multicall: #fb923c;
-    --type-lens: #2dd4bf;
-    --type-hook: #c084fc;
-    --type-threatactor: #dc2626;
     --conf-low: #ff5555;
     --conf-mid: #f59e0b;
     --conf-high: #50fa7b;
-    --type-cex: #f1fa8c;
-    --type-bridge: #8be9fd;
-    --type-mixer: #ff5555;
-    --type-launcher: #bd93f9;
-    --type-other: #6272a4;
-    --type-unknown: #5c5c5c;
     --font: 'Mononoki Nerd Font', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
     --font-size: 15px;
     --line-height: 1.6;
@@ -599,46 +559,6 @@ const isFallbackSecret = usingFallbackSecret();
     font-weight: 600;
   }
 
-  /* Chain badges */
-  .badge[data-chain="ethereum"]   { border-color: var(--chain-ethereum);   color: var(--chain-ethereum); }
-  .badge[data-chain="robinhood"]  { border-color: var(--chain-robinhood);  color: var(--chain-robinhood); }
-  .badge[data-chain="base"]       { border-color: var(--chain-base);       color: var(--chain-base); }
-  .badge[data-chain="bsc"]        { border-color: var(--chain-bsc);        color: var(--chain-bsc); }
-  .badge[data-chain="arbitrum"]   { border-color: var(--chain-arbitrum);   color: var(--chain-arbitrum); }
-  .badge[data-chain="optimism"]   { border-color: var(--chain-optimism);   color: var(--chain-optimism); }
-  .badge[data-chain="polygon"]    { border-color: var(--chain-polygon);    color: var(--chain-polygon); }
-  .badge[data-chain="avalanche"]  { border-color: var(--chain-avalanche);  color: var(--chain-avalanche); }
-  .badge[data-chain="unichain"]   { border-color: var(--chain-unichain);   color: var(--chain-unichain); }
-  .badge[data-chain="hyperliquid"] { border-color: var(--chain-hyperliquid); color: var(--chain-hyperliquid); }
-  .badge[data-chain="bitcoin"]     { border-color: var(--chain-bitcoin);     color: var(--chain-bitcoin); }
-  .badge[data-chain="tron"]        { border-color: var(--chain-tron);        color: var(--chain-tron); }
-  .badge[data-chain="*"]          { border-color: var(--warn);              color: var(--warn); }
-
-  /* Type badges */
-  .badge[data-type="factory"]   { border-color: var(--type-factory);   color: var(--type-factory); }
-  .badge[data-type="wallet"]    { border-color: var(--type-wallet);    color: var(--type-wallet); }
-  .badge[data-type="dex"]       { border-color: var(--type-dex);       color: var(--type-dex); }
-  .badge[data-type="token"]     { border-color: var(--type-token);     color: var(--type-token); }
-  .badge[data-type="locker"]    { border-color: var(--type-locker);    color: var(--type-locker); }
-  .badge[data-type="router"]    { border-color: var(--type-router);    color: var(--type-router); }
-  .badge[data-type="proxy"]     { border-color: var(--type-proxy);     color: var(--type-proxy); }
-  .badge[data-type="governance"]{ border-color: var(--type-governance);color: var(--type-governance); }
-  .badge[data-type="oracle"]    { border-color: var(--type-oracle);    color: var(--type-oracle); }
-  .badge[data-type="multisig"]  { border-color: var(--type-multisig);  color: var(--type-multisig); }
-  .badge[data-type="lending"]   { border-color: var(--type-lending);   color: var(--type-lending); }
-  .badge[data-type="staking"]   { border-color: var(--type-staking);   color: var(--type-staking); }
-  .badge[data-type="positions"] { border-color: var(--type-positions); color: var(--type-positions); }
-  .badge[data-type="multicall"] { border-color: var(--type-multicall); color: var(--type-multicall); }
-  .badge[data-type="lens"]      { border-color: var(--type-lens);      color: var(--type-lens); }
-  .badge[data-type="hook"]      { border-color: var(--type-hook);      color: var(--type-hook); }
-  .badge[data-type="threatactor"] { border-color: var(--type-threatactor); color: var(--type-threatactor); }
-  .badge[data-type="cex"]       { border-color: var(--type-cex);       color: var(--type-cex); }
-  .badge[data-type="bridge"]    { border-color: var(--type-bridge);    color: var(--type-bridge); }
-  .badge[data-type="mixer"]     { border-color: var(--type-mixer);     color: var(--type-mixer); }
-  .badge[data-type="launcher"]  { border-color: var(--type-launcher);  color: var(--type-launcher); }
-  .badge[data-type="other"]     { border-color: var(--type-other);     color: var(--type-other); }
-  .badge[data-type="unknown"]   { border-color: var(--type-unknown);   color: var(--type-unknown); }
-
   /* Address display */
   .address-mono {
     font-family: var(--font);
@@ -744,58 +664,9 @@ const isFallbackSecret = usingFallbackSecret();
     background: color-mix(in srgb, currentColor 8%, transparent);
   }
 
-  .chain-chip[data-chain="ethereum"]  { color: var(--chain-ethereum); }
-  .chain-chip[data-chain="robinhood"] { color: var(--chain-robinhood); }
-  .chain-chip[data-chain="base"]      { color: var(--chain-base); }
-  .chain-chip[data-chain="bsc"]       { color: var(--chain-bsc); }
-  .chain-chip[data-chain="arbitrum"]  { color: var(--chain-arbitrum); }
-  .chain-chip[data-chain="optimism"]  { color: var(--chain-optimism); }
-  .chain-chip[data-chain="polygon"]   { color: var(--chain-polygon); }
-  .chain-chip[data-chain="avalanche"] { color: var(--chain-avalanche); }
-  .chain-chip[data-chain="unichain"]  { color: var(--chain-unichain); }
-  .chain-chip[data-chain="hyperliquid"]  { color: var(--chain-hyperliquid); }
-  .chain-chip[data-chain="bitcoin"]  { color: var(--chain-bitcoin); }
-  .chain-chip[data-chain="tron"]  { color: var(--chain-tron); }
-
-  .chain-chip:hover {
-    border-color: currentColor;
-    background: color-mix(in srgb, currentColor 8%, transparent);
-  }
-
   .chain-chip .count {
     color: var(--text-muted);
     font-size: 0.78rem;
-  }
-
-  .chain-hide-btn {
-    cursor: pointer;
-    color: var(--danger);
-    font-size: 0.85rem;
-    margin-left: auto;
-    padding: 0 0.3rem;
-    opacity: 0.6;
-    user-select: none;
-    line-height: 1;
-  }
-
-  .chain-hide-btn:hover {
-    opacity: 1;
-  }
-
-  .edit-toggle-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 0.15rem 0.6rem;
-    font-family: var(--font);
-    font-size: 0.72rem;
-    cursor: pointer;
-    margin-left: 0.5rem;
-  }
-
-  .edit-toggle-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
   }
 
   .mono {
@@ -856,4 +727,29 @@ const isFallbackSecret = usingFallbackSecret();
   .doc-req-y { color: #f1fa8c; }
   .doc-req-n { color: #5c5c5c; }
   .doc-num   { color: #bd93f9; font-weight: 600; }
+
+  @media (max-width: 700px) {
+    header {
+      padding: 1rem;
+      gap: 1rem;
+    }
+
+    nav {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.8rem;
+    }
+
+    nav a {
+      font-size: 0.8rem;
+    }
+
+    #toggle-stream {
+      margin-left: 0 !important;
+    }
+
+    main {
+      padding: 1rem;
+    }
+  }
 </style>

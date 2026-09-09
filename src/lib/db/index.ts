@@ -18,3 +18,15 @@ export {
   touchToken,
   deleteToken,
 } from './tokens.ts';
+export {
+  getAllTypes,
+  insertType,
+  updateTypeColor,
+} from './types.ts';
+export type { LabelType } from './types.ts';
+export {
+  getAllChains,
+  insertChain,
+  updateChainColor,
+} from './chains.ts';
+export type { ChainDefinition } from './chains.ts';

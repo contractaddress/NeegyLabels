@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import RegistrySection from '../components/RegistrySection.astro';
+import {
+  getAllChains,
+  getAllTypes,
+  getChainCounts,
+  getTypeCounts,
+  insertChain,
+  insertType,
+  updateChainColor,
+  updateTypeColor,
+} from '../lib/db.ts';
+
+let error: string | null = null;
+const autosave = Astro.request.headers.get('x-autosave') === '1';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const action = data.get('action')?.toString();
+    const name = data.get('name')?.toString() ?? '';
+    const color = data.get('color')?.toString() ?? '';
+
+    if (action === 'add-type') {
+      insertType(name, color);
+      return Astro.redirect('/manage?status=type-added');
+    }
+    if (action === 'add-chain') {
+      insertChain(name, color);
+      return Astro.redirect('/manage?status=chain-added');
+    }
+    if (action === 'type-color') updateTypeColor(name, color);
+    else if (action === 'chain-color') updateChainColor(name, color);
+    else throw new Error('unknown action');
+
+    if (autosave) return new Response(null, { status: 204 });
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : String(cause);
+    if (autosave) return new Response(message, { status: 400 });
+    error = message;
+  }
+}
+
+const status = new URL(Astro.request.url).searchParams.get('status');
+const typeCounts = new Map(getTypeCounts().map(({ type, count }) => [type, count]));
+const chainCounts = new Map(getChainCounts().map(({ chain, count }) => [chain, count]));
+const types = getAllTypes().map((entry) => ({ ...entry, count: typeCounts.get(entry.name) ?? 0 }));
+const chains = getAllChains().map((entry) => ({ ...entry, count: chainCounts.get(entry.name) ?? 0 }));
+---
+
+<Base title="Manage">
+  <h1>manage</h1>
+
+  {error && <div class="flash error">[err] {error}</div>}
+  {status === 'type-added' && <div class="flash success">[ok] type added</div>}
+  {status === 'chain-added' && <div class="flash success">[ok] chain added</div>}
+
+  <RegistrySection kind="chain" entries={chains} />
+  <RegistrySection kind="type" entries={types} />
+</Base>
+
+<script>
+  if (new URL(location.href).searchParams.has('status')) {
+    history.replaceState({}, '', location.pathname);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-add-toggle]').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const kind = toggle.dataset.addToggle;
+      const panel = document.querySelector<HTMLElement>(`[data-add-panel="${kind}"]`);
+      if (!panel) return;
+      panel.hidden = !panel.hidden;
+      toggle.setAttribute('aria-expanded', String(!panel.hidden));
+      if (!panel.hidden) panel.querySelector<HTMLInputElement>('input[name="name"]')?.focus();
+    });
+  });
+
+  const timers = new WeakMap<HTMLInputElement, number>();
+  const requests = new WeakMap<HTMLInputElement, AbortController>();
+  document.querySelectorAll<HTMLInputElement>('[data-color-form] input[type="color"]').forEach((input) => {
+    input.addEventListener('input', () => {
+      const form = input.closest<HTMLFormElement>('[data-color-form]');
+      const card = input.closest<HTMLElement>('.registry-card');
+      const badge = card?.querySelector<HTMLElement>('.badge');
+      const value = input.nextElementSibling;
+      const status = form?.querySelector<HTMLElement>('[data-save-status]');
+      if (!form || !status) return;
+
+      if (value) value.textContent = input.value;
+      if (card) card.style.color = input.value;
+      if (badge) {
+        badge.style.color = input.value;
+        badge.style.borderColor = input.value;
+      }
+      status.textContent = 'saving...';
+      status.classList.remove('error');
+
+      const timer = timers.get(input);
+      if (timer) window.clearTimeout(timer);
+      requests.get(input)?.abort();
+      timers.set(input, window.setTimeout(async () => {
+        const controller = new AbortController();
+        requests.set(input, controller);
+        try {
+          const response = await fetch('/manage', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'x-autosave': '1' },
+            signal: controller.signal,
+          });
+          if (response.redirected || response.url.endsWith('/login')) throw new Error('session expired');
+          if (!response.ok) throw new Error(await response.text());
+          status.textContent = 'saved';
+          window.setTimeout(() => { if (status.textContent === 'saved') status.textContent = ''; }, 1200);
+        } catch (cause) {
+          if (cause instanceof DOMException && cause.name === 'AbortError') return;
+          status.textContent = 'save failed';
+          status.classList.add('error');
+        }
+      }, 400));
+    });
+  });
+</script>

@@ -87,7 +87,7 @@ GET /api/labels?type=mixer&amp;bulk=true</code></pre>
       <tr><td><span class="doc-param">address</span></td><td><span class="doc-req-y">yes</span></td><td>Lowercase 0x address</td></tr>
       <tr><td><span class="doc-param">chain</span></td><td><span class="doc-req-y">yes</span></td><td>Chain key or * for cross-chain</td></tr>
       <tr><td><span class="doc-param">label</span></td><td><span class="doc-req-y">yes</span></td><td>Human-readable name</td></tr>
-      <tr><td><span class="doc-param">type</span></td><td><span class="doc-req-n">no</span></td><td>factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, multicall, lens, hook, threatactor, cex, bridge, mixer, launcher, other</td></tr>
+      <tr><td><span class="doc-param">type</span></td><td><span class="doc-req-n">no</span></td><td>Any string; registered suggestions are available from <code>GET /api/types</code></td></tr>
       <tr><td><span class="doc-param">source</span></td><td><span class="doc-req-n">no</span></td><td>Default: manual</td></tr>
       <tr><td><span class="doc-param">confidence</span></td><td><span class="doc-req-n">no</span></td><td>0–100 confidence score</td></tr>
     </tbody>
@@ -113,7 +113,7 @@ Authorization: Bearer n33gy...</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={putBody + '\n' + highlightJson('{ "success": true }')}></code></pre>
 
   <h2>GET /api/types</h2>
-  <p class="text-muted">List all supported label types. Public — no auth required.</p>
+  <p class="text-muted">List registered label type suggestions. Public — no auth required. Browser-local archives do not change this response.</p>
 
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:0.5rem;"><code>GET /api/types</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={highlightJson('{ "types": ["factory", "wallet", "dex", "..."] }')}></code></pre>
@@ -129,12 +129,12 @@ Authorization: Bearer n33gy...</code></pre>
     </tbody>
   </table>
 
-  <h2>chains</h2>
+  <h2>default_chains</h2>
   <p class="text-muted">
     <code>ethereum</code> <code>robinhood</code> <code>base</code> <code>bsc</code> <code>arbitrum</code> <code>optimism</code> <code>polygon</code> <code>avalanche</code> <code>unichain</code> <code>hyperliquid</code> <code>bitcoin</code> <code>tron</code> <code>*</code>
   </p>
 
-  <h2>types</h2>
+  <h2>default_types</h2>
   <p class="text-muted">
     <code>factory</code> <code>wallet</code> <code>dex</code> <code>token</code> <code>locker</code> <code>router</code> <code>proxy</code> <code>governance</code> <code>oracle</code> <code>multisig</code> <code>lending</code> <code>staking</code> <code>positions</code> <code>multicall</code> <code>lens</code> <code>hook</code> <code>threatactor</code> <code>cex</code> <code>bridge</code> <code>mixer</code> <code>launcher</code> <code>other</code> <code>unknown</code>
   </p>

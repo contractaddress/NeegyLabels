@@ -26,8 +26,8 @@ List or search labels. Public.
 | Param | Type | Description |
 |-------|------|-------------|
 | `address` | string | Lowercase 0x address |
-| `chain` | string | Chain key (see [Chains](#chains)) |
-| `type` | string | Label type (see [Types](#types)) |
+| `chain` | string | Chain key; registered suggestions are managed at `/manage` |
+| `type` | string | Label type; registered suggestions are available from `GET /api/types` |
 | `label` | string | Case-insensitive text search on label name |
 | `limit` | int | Max results per page, default 50 |
 | `offset` | int | Pagination offset |
@@ -145,7 +145,7 @@ Authorization: Bearer n33gy...
 
 ### GET /api/types
 
-List all available label types. Public.
+List registered label type suggestions. Public. Browser-local archives do not change this response.
 
 ```bash
 GET /api/types
@@ -166,12 +166,12 @@ GET /api/types
 | 404 | Label not found |
 | 500 | Database error |
 
-## Chains
+## Default Chains
 
 `ethereum` `robinhood` `base` `bsc` `arbitrum` `optimism` `polygon` `avalanche` `unichain` `hyperliquid` `bitcoin` `tron` `*`
 
 `*` means the label applies cross-chain.
 
-## Types
+## Default Types
 
 `factory` `wallet` `dex` `token` `locker` `router` `proxy` `governance` `oracle` `multisig` `lending` `staking` `positions` `multicall` `lens` `hook` `threatactor` `cex` `bridge` `mixer` `launcher` `other` `unknown`

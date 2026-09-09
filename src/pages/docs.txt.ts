@@ -72,7 +72,7 @@ Body (JSON):
 | address | yes | Lowercase 0x address |
 | chain | yes | Chain key or * for cross-chain |
 | label | yes | Human-readable name |
-| type | no | factory, wallet, dex, token, locker, router, proxy, governance, oracle, multisig, lending, staking, positions, multicall, lens, hook, threatactor, cex, bridge, mixer, launcher, other |
+| type | no | Any string; registered suggestions are available from GET /api/types |
 | source | no | Default: manual |
 | confidence | no | 0-100 confidence score |
 
@@ -107,7 +107,8 @@ Response (404): { "error": "Label not found" }
 
 ### GET /api/types
 
-List all supported label types. Public (no auth required).
+List registered label type suggestions. Public (no auth required).
+Browser-local archives do not change this response.
 
   GET /api/types
 
@@ -121,11 +122,11 @@ Response:
 404: Label not found
 500: Database error
 
-## Chains
+## Default Chains
 
 ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain hyperliquid bitcoin tron *
 
-## Types
+## Default Types
 
 factory wallet dex token locker router proxy governance oracle multisig lending staking positions multicall lens hook threatactor cex bridge mixer launcher other unknown
 `, {
