@@ -3,7 +3,7 @@
 ## Features
 
 - **REST API**: look up/add/delete labels and integrate directly into any tool.
-- **Web UI**: browse and manage the database 
+- **Web UI**: browse labels and manage chain/type colors, explorers, and archives
 - **Multi-chain**: All major EVM chains & BTC (Solana planned)
 - **Label types**: factory, wallet, dex, token, bridge, mixer, threatactor, and 15+ more
 - **Confidence scores**: optional 0–100 rating per label

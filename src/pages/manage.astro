@@ -9,6 +9,7 @@ import {
   insertChain,
   insertType,
   updateChainColor,
+  updateChainExplorer,
   updateTypeColor,
 } from '../lib/db.ts';
 
@@ -21,20 +22,24 @@ if (Astro.request.method === 'POST') {
     const action = data.get('action')?.toString();
     const name = data.get('name')?.toString() ?? '';
     const color = data.get('color')?.toString() ?? '';
+    const explorerBaseUrl = data.get('explorer_base_url')?.toString() ?? '';
 
     if (action === 'add-type') {
       insertType(name, color);
       return Astro.redirect('/manage?status=type-added');
     }
     if (action === 'add-chain') {
-      insertChain(name, color);
+      if (!explorerBaseUrl) throw new Error('explorer base URL is required');
+      insertChain(name, color, explorerBaseUrl);
       return Astro.redirect('/manage?status=chain-added');
     }
     if (action === 'type-color') updateTypeColor(name, color);
     else if (action === 'chain-color') updateChainColor(name, color);
+    else if (action === 'chain-explorer') updateChainExplorer(name, explorerBaseUrl);
     else throw new Error('unknown action');
 
     if (autosave) return new Response(null, { status: 204 });
+    return Astro.redirect('/manage');
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : String(cause);
     if (autosave) return new Response(message, { status: 400 });
@@ -78,47 +83,74 @@ const chains = getAllChains().map((entry) => ({ ...entry, count: chainCounts.get
 
   const timers = new WeakMap<HTMLInputElement, number>();
   const requests = new WeakMap<HTMLInputElement, AbortController>();
+
+  function queueSave(input: HTMLInputElement, delay = 400) {
+    const form = input.closest<HTMLFormElement>('form');
+    const status = form?.querySelector<HTMLElement>('[data-save-status]');
+    if (!form || !status) return;
+
+    const timer = timers.get(input);
+    if (timer) window.clearTimeout(timer);
+    requests.get(input)?.abort();
+    input.setCustomValidity('');
+    input.removeAttribute('aria-invalid');
+    if (!input.reportValidity()) {
+      status.textContent = 'invalid';
+      status.classList.add('error');
+      return;
+    }
+    status.textContent = 'saving...';
+    status.classList.remove('error');
+    timers.set(input, window.setTimeout(async () => {
+      const controller = new AbortController();
+      requests.set(input, controller);
+      try {
+        const response = await fetch('/manage', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'x-autosave': '1' },
+          signal: controller.signal,
+          keepalive: true,
+        });
+        if (response.redirected || response.url.endsWith('/login')) throw new Error('session expired');
+        if (!response.ok) {
+          input.setCustomValidity(await response.text() || 'Could not save this value');
+          input.reportValidity();
+          throw new Error('not saved');
+        }
+        status.textContent = 'saved';
+        window.setTimeout(() => { if (status.textContent === 'saved') status.textContent = ''; }, 1200);
+      } catch (cause) {
+        if (cause instanceof DOMException && cause.name === 'AbortError') return;
+        status.textContent = cause instanceof Error ? cause.message : 'save failed';
+        status.classList.add('error');
+        input.setAttribute('aria-invalid', 'true');
+      }
+    }, delay));
+  }
+
   document.querySelectorAll<HTMLInputElement>('[data-color-form] input[type="color"]').forEach((input) => {
     input.addEventListener('input', () => {
-      const form = input.closest<HTMLFormElement>('[data-color-form]');
       const card = input.closest<HTMLElement>('.registry-card');
       const badge = card?.querySelector<HTMLElement>('.badge');
       const value = input.nextElementSibling;
-      const status = form?.querySelector<HTMLElement>('[data-save-status]');
-      if (!form || !status) return;
-
       if (value) value.textContent = input.value;
       if (card) card.style.color = input.value;
       if (badge) {
         badge.style.color = input.value;
         badge.style.borderColor = input.value;
       }
-      status.textContent = 'saving...';
-      status.classList.remove('error');
+      queueSave(input);
+    });
+    input.addEventListener('change', () => queueSave(input, 0));
+  });
 
-      const timer = timers.get(input);
-      if (timer) window.clearTimeout(timer);
-      requests.get(input)?.abort();
-      timers.set(input, window.setTimeout(async () => {
-        const controller = new AbortController();
-        requests.set(input, controller);
-        try {
-          const response = await fetch('/manage', {
-            method: 'POST',
-            body: new FormData(form),
-            headers: { 'x-autosave': '1' },
-            signal: controller.signal,
-          });
-          if (response.redirected || response.url.endsWith('/login')) throw new Error('session expired');
-          if (!response.ok) throw new Error(await response.text());
-          status.textContent = 'saved';
-          window.setTimeout(() => { if (status.textContent === 'saved') status.textContent = ''; }, 1200);
-        } catch (cause) {
-          if (cause instanceof DOMException && cause.name === 'AbortError') return;
-          status.textContent = 'save failed';
-          status.classList.add('error');
-        }
-      }, 400));
+  document.querySelectorAll<HTMLInputElement>('[data-explorer-form] input[name="explorer_base_url"]').forEach((input) => {
+    input.addEventListener('input', () => queueSave(input));
+    input.addEventListener('change', () => queueSave(input, 0));
+    input.closest('form')?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      queueSave(input, 0);
     });
   });
 </script>

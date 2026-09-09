@@ -9,6 +9,7 @@ export interface ChainDefinition {
 
 const CHAIN_NAME = /^(?:\*|[a-z0-9][a-z0-9_-]{0,49})$/;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+let explorerBases: Map<string, string | null> | null = null;
 
 function validName(name: string): string {
   const normalized = name.trim().toLowerCase();
@@ -42,12 +43,13 @@ export function getAllChains(): ChainDefinition[] {
   return getDb().prepare('SELECT name, color, explorer_base_url, created_at FROM chains ORDER BY name').all() as ChainDefinition[];
 }
 
-export function insertChain(name: string, color: string, explorerBaseUrl?: string): ChainDefinition {
+export function insertChain(name: string, color: string, explorerBaseUrl: string): ChainDefinition {
   const normalizedName = validName(name);
   const normalizedColor = validColor(color);
-  const normalizedExplorer = explorerBaseUrl ? validExplorerBase(explorerBaseUrl) : null;
+  const normalizedExplorer = validExplorerBase(explorerBaseUrl);
   const result = getDb().prepare('INSERT OR IGNORE INTO chains (name, color, explorer_base_url) VALUES (?, ?, ?)').run(normalizedName, normalizedColor, normalizedExplorer);
   if (result.changes === 0) throw new Error(`chain "${normalizedName}" already exists`);
+  explorerBases?.set(normalizedName, normalizedExplorer);
   return getDb().prepare('SELECT name, color, explorer_base_url, created_at FROM chains WHERE name = ?').get(normalizedName) as ChainDefinition;
 }
 
@@ -58,12 +60,15 @@ export function updateChainColor(name: string, color: string): boolean {
 }
 
 export function updateChainExplorer(name: string, explorerBaseUrl: string): boolean {
-  const result = getDb().prepare('UPDATE chains SET explorer_base_url = ? WHERE name = ?').run(validExplorerBase(explorerBaseUrl), validName(name));
+  const normalizedName = validName(name);
+  const normalizedExplorer = validExplorerBase(explorerBaseUrl);
+  const result = getDb().prepare('UPDATE chains SET explorer_base_url = ? WHERE name = ?').run(normalizedExplorer, normalizedName);
   if (result.changes === 0) throw new Error('chain not found');
+  explorerBases?.set(normalizedName, normalizedExplorer);
   return true;
 }
 
 export function getChainExplorerBase(name: string): string | null {
-  const row = getDb().prepare('SELECT explorer_base_url FROM chains WHERE name = ?').get(name) as { explorer_base_url: string | null } | undefined;
-  return row?.explorer_base_url ?? null;
+  explorerBases ??= new Map(getAllChains().map((chain) => [chain.name, chain.explorer_base_url]));
+  return explorerBases.get(name.toLowerCase()) ?? null;
 }

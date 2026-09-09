@@ -26,7 +26,7 @@ List or search labels. Public.
 | Param | Type | Description |
 |-------|------|-------------|
 | `address` | string | Lowercase 0x address |
-| `chain` | string | Chain key; registered suggestions are managed at `/manage` |
+| `chain` | string | Chain key; registered suggestions and explorer bases are managed at `/manage` |
 | `type` | string | Label type; registered suggestions are available from `GET /api/types` |
 | `label` | string | Case-insensitive text search on label name |
 | `limit` | int | Max results per page, default 50 |

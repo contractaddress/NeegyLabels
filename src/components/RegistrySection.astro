@@ -1,8 +1,11 @@
 ---
+import Badge from './Badge.astro';
+
 interface Entry {
   name: string;
   color: string;
   count: number;
+  explorer_base_url?: string | null;
 }
 
 interface Props {
@@ -36,6 +39,13 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
         <label for={`new-${kind}-name`}>{kind} name</label>
         <input id={`new-${kind}-name`} name="name" type="text" pattern={pattern} maxlength="50" placeholder={example} required autocomplete="off" />
       </div>
+      {kind === 'chain' && (
+        <div class="form-group explorer-field">
+          <label for="new-chain-explorer">explorer base URL</label>
+          <input id="new-chain-explorer" name="explorer_base_url" type="url" pattern="https://[^?]+" placeholder="https://etherscan.io" required autocomplete="off" aria-describedby="new-chain-explorer-help" />
+          <small id="new-chain-explorer-help">base only; /address/&lt;address&gt; is added automatically</small>
+        </div>
+      )}
       <div class="form-group">
         <label for={`new-${kind}-color`}>color</label>
         <input id={`new-${kind}-color`} name="color" type="color" value={defaultColor} required />
@@ -45,14 +55,14 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
   </div>
 
   <div class="registry-grid">
-    {entries.map(({ name, color, count }) => (
+    {entries.map(({ name, color, count, explorer_base_url }) => (
       <article
         class={`registry-card ${kind}-chip`}
         data-type={kind === 'type' ? name : undefined}
         data-chain={kind === 'chain' ? name : undefined}
       >
         <div class="card-header">
-          <a href={`/${kind}/${name}`} class="badge" data-type={kind === 'type' ? name : undefined} data-chain={kind === 'chain' ? name : undefined}>{name}</a>
+          <Badge kind={kind} value={name} href={`/${kind}/${name}`} target="_self" />
           <span class="count">{count} {count === 1 ? 'label' : 'labels'}</span>
         </div>
         <form method="POST" class="color-controls" data-color-form>
@@ -63,6 +73,27 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
           <span class="save-status" data-save-status aria-live="polite"></span>
           <button type="button" class={`quiet-btn ${kind}-archive-btn`}>archive</button>
         </form>
+        {kind === 'chain' && name !== '*' && (
+          <form method="POST" class="explorer-controls" data-explorer-form>
+            <input type="hidden" name="action" value="chain-explorer" />
+            <input type="hidden" name="name" value={name} />
+            <input
+              id={`explorer-${name}`}
+              name="explorer_base_url"
+              type="url"
+              pattern="https://[^?]+"
+              value={explorer_base_url ?? ''}
+              placeholder="https://explorer.example"
+              aria-label={`Explorer base URL for ${name}`}
+              title="HTTPS base URL only; /address/<address> is added automatically"
+              required
+              autocomplete="off"
+            />
+            <span class:list={['save-status', { error: !explorer_base_url }]} data-save-status aria-live="polite">
+              {!explorer_base_url ? 'missing' : ''}
+            </span>
+          </form>
+        )}
       </article>
     ))}
   </div>
@@ -106,6 +137,15 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
 
   .grow {
     flex: 1;
+  }
+
+  .explorer-field {
+    flex: 2;
+  }
+
+  .explorer-field small {
+    color: var(--text-muted);
+    font-size: 0.68rem;
   }
 
   input[type='color'] {
@@ -180,6 +220,23 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
     margin-left: auto;
   }
 
+  .explorer-controls {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .explorer-controls input {
+    min-width: 0;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.76rem;
+  }
+
   @media (max-width: 620px) {
     .registry-header,
     .add-form {
@@ -192,6 +249,10 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
     }
 
     .registry-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .explorer-controls {
       grid-template-columns: 1fr;
     }
   }
