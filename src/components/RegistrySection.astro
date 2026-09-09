@@ -83,6 +83,7 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
               type="url"
               pattern="https://[^?]+"
               value={explorer_base_url ?? ''}
+              size={(explorer_base_url ?? 'https://explorer.example').length}
               placeholder="https://explorer.example"
               aria-label={`Explorer base URL for ${name}`}
               title="HTTPS base URL only; /address/<address> is added automatically"
@@ -223,7 +224,7 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
   .explorer-controls {
     max-width: none;
     display: grid;
-    grid-template-columns: minmax(0, 14rem) auto;
+    grid-template-columns: minmax(0, max-content) auto;
     align-items: center;
     gap: 0.5rem;
     margin-top: 0.65rem;
@@ -232,6 +233,7 @@ const defaultColor = kind === 'chain' ? '#627eea' : '#50fa7b';
   }
 
   .explorer-controls input {
+    max-width: 100%;
     min-width: 0;
     padding: 0.35rem 0.55rem;
     font-size: 0.76rem;
