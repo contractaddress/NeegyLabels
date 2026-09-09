@@ -26,7 +26,9 @@ export {
 export type { LabelType } from './types.ts';
 export {
   getAllChains,
+  getChainExplorerBase,
   insertChain,
   updateChainColor,
+  updateChainExplorer,
 } from './chains.ts';
 export type { ChainDefinition } from './chains.ts';

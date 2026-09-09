@@ -30,19 +30,19 @@ const DEFAULT_TYPES = [
 ] as const;
 
 const DEFAULT_CHAINS = [
-  ['*', '#f1fa8c'],
-  ['arbitrum', '#28a0f0'],
-  ['avalanche', '#e84142'],
-  ['base', '#0052ff'],
-  ['bitcoin', '#f7931a'],
-  ['bsc', '#f0b90b'],
-  ['ethereum', '#627eea'],
-  ['hyperliquid', '#19edb0'],
-  ['optimism', '#ff0420'],
-  ['polygon', '#8247e5'],
-  ['robinhood', '#00c805'],
-  ['tron', '#eb0029'],
-  ['unichain', '#ff007a'],
+  ['*', '#f1fa8c', null],
+  ['arbitrum', '#28a0f0', 'https://arbiscan.io'],
+  ['avalanche', '#e84142', 'https://snowtrace.io'],
+  ['base', '#0052ff', 'https://basescan.org'],
+  ['bitcoin', '#f7931a', 'https://mempool.space'],
+  ['bsc', '#f0b90b', 'https://bscscan.com'],
+  ['ethereum', '#627eea', 'https://etherscan.io'],
+  ['hyperliquid', '#19edb0', 'https://hyperliquid.cloud'],
+  ['optimism', '#ff0420', 'https://optimistic.etherscan.io'],
+  ['polygon', '#8247e5', 'https://polygonscan.com'],
+  ['robinhood', '#00c805', 'https://rh-scan.com'],
+  ['tron', '#eb0029', 'https://tronscan.org/#'],
+  ['unichain', '#ff007a', 'https://uniscan.xyz'],
 ] as const;
 
 let db: Database.Database | null = null;
@@ -82,14 +82,23 @@ export function getDb(): Database.Database {
     db.exec(`CREATE TABLE IF NOT EXISTS chains (
       name TEXT PRIMARY KEY COLLATE NOCASE,
       color TEXT NOT NULL,
+      explorer_base_url TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`);
-    const seedChain = db.prepare('INSERT OR IGNORE INTO chains (name, color) VALUES (?, ?)');
+    const chainColumns = db.pragma('table_info(chains)') as { name: string }[];
+    if (!chainColumns.some(({ name }) => name === 'explorer_base_url')) {
+      db.exec('ALTER TABLE chains ADD COLUMN explorer_base_url TEXT');
+    }
+    const seedChain = db.prepare('INSERT OR IGNORE INTO chains (name, color, explorer_base_url) VALUES (?, ?, ?)');
+    const seedExplorer = db.prepare('UPDATE chains SET explorer_base_url = ? WHERE name = ? AND explorer_base_url IS NULL');
     db.transaction(() => {
-      for (const [name, color] of DEFAULT_CHAINS) seedChain.run(name, color);
+      for (const [name, color, explorerBaseUrl] of DEFAULT_CHAINS) {
+        seedChain.run(name, color, explorerBaseUrl);
+        if (explorerBaseUrl) seedExplorer.run(explorerBaseUrl, name);
+      }
       const existingChains = db.prepare('SELECT DISTINCT chain FROM labels').all() as { chain: string }[];
       for (const { chain } of existingChains) {
-        if (/^(?:\*|[a-z0-9][a-z0-9_-]{0,49})$/.test(chain)) seedChain.run(chain, '#5c5c5c');
+        if (/^(?:\*|[a-z0-9][a-z0-9_-]{0,49})$/.test(chain)) seedChain.run(chain, '#5c5c5c', null);
       }
     })();
   }

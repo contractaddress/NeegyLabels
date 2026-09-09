@@ -3,6 +3,7 @@ import { getDb } from './core.ts';
 export interface ChainDefinition {
   name: string;
   color: string;
+  explorer_base_url: string | null;
   created_at: string;
 }
 
@@ -23,20 +24,46 @@ function validColor(color: string): string {
   return normalized;
 }
 
-export function getAllChains(): ChainDefinition[] {
-  return getDb().prepare('SELECT name, color, created_at FROM chains ORDER BY name').all() as ChainDefinition[];
+function validExplorerBase(explorerBaseUrl: string): string {
+  const normalized = explorerBaseUrl.trim().replace(/\/+$/, '').replace(/\/address$/, '');
+  let parsed: URL;
+  try {
+    parsed = new URL(normalized);
+  } catch {
+    throw new Error('explorer must be a valid URL');
+  }
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password || parsed.search) {
+    throw new Error('explorer must be an HTTPS base URL without credentials or query parameters');
+  }
+  return normalized;
 }
 
-export function insertChain(name: string, color: string): ChainDefinition {
+export function getAllChains(): ChainDefinition[] {
+  return getDb().prepare('SELECT name, color, explorer_base_url, created_at FROM chains ORDER BY name').all() as ChainDefinition[];
+}
+
+export function insertChain(name: string, color: string, explorerBaseUrl?: string): ChainDefinition {
   const normalizedName = validName(name);
   const normalizedColor = validColor(color);
-  const result = getDb().prepare('INSERT OR IGNORE INTO chains (name, color) VALUES (?, ?)').run(normalizedName, normalizedColor);
+  const normalizedExplorer = explorerBaseUrl ? validExplorerBase(explorerBaseUrl) : null;
+  const result = getDb().prepare('INSERT OR IGNORE INTO chains (name, color, explorer_base_url) VALUES (?, ?, ?)').run(normalizedName, normalizedColor, normalizedExplorer);
   if (result.changes === 0) throw new Error(`chain "${normalizedName}" already exists`);
-  return getDb().prepare('SELECT name, color, created_at FROM chains WHERE name = ?').get(normalizedName) as ChainDefinition;
+  return getDb().prepare('SELECT name, color, explorer_base_url, created_at FROM chains WHERE name = ?').get(normalizedName) as ChainDefinition;
 }
 
 export function updateChainColor(name: string, color: string): boolean {
   const result = getDb().prepare('UPDATE chains SET color = ? WHERE name = ?').run(validColor(color), validName(name));
   if (result.changes === 0) throw new Error('chain not found');
   return true;
+}
+
+export function updateChainExplorer(name: string, explorerBaseUrl: string): boolean {
+  const result = getDb().prepare('UPDATE chains SET explorer_base_url = ? WHERE name = ?').run(validExplorerBase(explorerBaseUrl), validName(name));
+  if (result.changes === 0) throw new Error('chain not found');
+  return true;
+}
+
+export function getChainExplorerBase(name: string): string | null {
+  const row = getDb().prepare('SELECT explorer_base_url FROM chains WHERE name = ?').get(name) as { explorer_base_url: string | null } | undefined;
+  return row?.explorer_base_url ?? null;
 }
