@@ -51,7 +51,7 @@ Response:
     "total": 1
   }
 
-An unfiltered listing also includes a "chains" array of distinct chain keys.
+An unfiltered listing also includes observed facets: a "chains" array of distinct chain keys and a "types" array of distinct label types present in the data.
 
 ### POST /api/labels
 
@@ -114,6 +114,15 @@ Browser-local archives do not change this response.
 
 Response:
   { "types": ["factory", "wallet", "dex", "..."] }
+
+### GET /api/chains
+
+List registered chains with colors and explorer base URLs. Public (no auth required).
+
+  GET /api/chains
+
+Response:
+  { "chains": [{ "name": "ethereum", "color": "#627eea", "explorer_base_url": "https://etherscan.io" }] }
 
 ## Errors
 

@@ -75,6 +75,7 @@ curl http://localhost:4321/docs.txt
 | PUT | `/api/labels?address=&chain=` | Bearer | Update a label |
 | DELETE | `/api/labels?address=&chain=` | Bearer | Delete a label |
 | GET | `/api/types` | — | List all label types |
+| GET | `/api/chains` | — | List registered chains (color, explorer base URL) |
 
 ```bash
 # List labels on a chain (auth required for mutations only)
@@ -83,6 +84,9 @@ curl -H "Authorization: Bearer n33gy<id>_<secret>" \
 
 # List all label types
 curl http://localhost:4321/api/types
+
+# List registered chains
+curl http://localhost:4321/api/chains
 ```
 
 ## License

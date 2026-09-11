@@ -74,7 +74,7 @@ GET /api/labels?type=mixer&bulk=true
 }
 ```
 
-The `total` field is the full count (used to know when pagination is exhausted). An unfiltered listing also includes a `chains` array of distinct chain keys.
+The `total` field is the full count (used to know when pagination is exhausted). An unfiltered listing also includes observed facets: a `chains` array of distinct chain keys and a `types` array of distinct label types present in the data. Configured registries are available from `GET /api/chains` and `GET /api/types`.
 
 ### POST /api/labels
 
@@ -156,6 +156,26 @@ GET /api/types
 ```json
 { "types": ["factory", "wallet", "dex", "..."] }
 ```
+
+### GET /api/chains
+
+List registered chains with colors and explorer base URLs. Public.
+
+```bash
+GET /api/chains
+```
+
+**Response:**
+
+```json
+{
+  "chains": [
+    { "name": "ethereum", "color": "#627eea", "explorer_base_url": "https://etherscan.io" }
+  ]
+}
+```
+
+`explorer_base_url` is `null` for chains without an explorer, including `*`.
 
 ## Errors
 
