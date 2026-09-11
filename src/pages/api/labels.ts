@@ -5,6 +5,7 @@ import {
   deleteLabel,
   updateLabel,
   getDistinctChains,
+  getDistinctTypes,
 } from '../../lib/db.ts';
 import { getLabelCount } from '../../lib/db.ts';
 import { verifyToken } from '../../lib/tokens.ts';
@@ -44,6 +45,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     const body: Record<string, unknown> = { labels, total };
     if (!address && !chain && !type) {
       body.chains = getDistinctChains();
+      body.types = getDistinctTypes();
     }
 
     return new Response(JSON.stringify(body), {

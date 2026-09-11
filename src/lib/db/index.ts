@@ -6,6 +6,7 @@ export {
   deleteLabel,
   updateLabel,
   getDistinctChains,
+  getDistinctTypes,
   getChainCounts,
   getTypeCounts,
   getRecentLabels,

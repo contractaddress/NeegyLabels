@@ -77,6 +77,11 @@ export function getDistinctChains(): string[] {
   return (d.prepare('SELECT DISTINCT chain FROM labels ORDER BY chain').all() as { chain: string }[]).map(r => r.chain);
 }
 
+export function getDistinctTypes(): string[] {
+  const d = getDb();
+  return (d.prepare('SELECT DISTINCT type FROM labels WHERE type IS NOT NULL ORDER BY type').all() as { type: string }[]).map(r => r.type);
+}
+
 export function getChainCounts(): { chain: string; count: number }[] {
   const d = getDb();
   return d.prepare('SELECT chain, COUNT(*) as count FROM labels GROUP BY chain ORDER BY count DESC').all() as { chain: string; count: number }[];
