@@ -145,7 +145,7 @@ Authorization: Bearer n33gy...
 
 ### GET /api/types
 
-List registered label type suggestions. Public. Browser-local archives do not change this response.
+List registered label type suggestions with their configured colors. Public. Browser-local archives do not change this response.
 
 ```bash
 GET /api/types
@@ -154,8 +154,13 @@ GET /api/types
 **Response:**
 
 ```json
-{ "types": ["factory", "wallet", "dex", "..."] }
+{
+  "types": ["factory", "wallet", "dex", "..."],
+  "colors": { "factory": "#ff79c6", "wallet": "#50fa7b", "dex": "#7c3aed" }
+}
 ```
+
+`types` lists type names in order; `colors` maps each name to its configured hex color.
 
 ### GET /api/chains
 

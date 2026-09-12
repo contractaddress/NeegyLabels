@@ -74,7 +74,7 @@ curl http://localhost:4321/docs.txt
 | POST | `/api/labels` | Bearer | Create a label |
 | PUT | `/api/labels?address=&chain=` | Bearer | Update a label |
 | DELETE | `/api/labels?address=&chain=` | Bearer | Delete a label |
-| GET | `/api/types` | — | List all label types |
+| GET | `/api/types` | — | List all label types (with colors) |
 | GET | `/api/chains` | — | List registered chains (color, explorer base URL) |
 
 ```bash

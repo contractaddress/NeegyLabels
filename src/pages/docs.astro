@@ -113,10 +113,10 @@ Authorization: Bearer n33gy...</code></pre>
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={putBody + '\n' + highlightJson('{ "success": true }')}></code></pre>
 
   <h2>GET /api/types</h2>
-  <p class="text-muted">List registered label type suggestions. Public — no auth required. Browser-local archives do not change this response.</p>
+  <p class="text-muted">List registered label type suggestions with their configured colors. Public — no auth required. Browser-local archives do not change this response.</p>
 
   <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:0.5rem;"><code>GET /api/types</code></pre>
-  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={highlightJson('{ "types": ["factory", "wallet", "dex", "..."] }')}></code></pre>
+  <pre style="background:var(--bg);padding:0.75rem;overflow-x:auto;border:1px solid #3a3a3a;margin-bottom:2rem;"><code set:html={highlightJson('{ "types": ["factory", "wallet", "dex", "..."], "colors": { "factory": "#ff79c6", "wallet": "#50fa7b" } }')}></code></pre>
 
   <h2>GET /api/chains</h2>
   <p class="text-muted">List registered chains with colors and explorer base URLs. Public — no auth required.</p>

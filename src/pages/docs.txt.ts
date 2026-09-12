@@ -107,13 +107,13 @@ Response (404): { "error": "Label not found" }
 
 ### GET /api/types
 
-List registered label type suggestions. Public (no auth required).
+List registered label type suggestions with their configured colors. Public (no auth required).
 Browser-local archives do not change this response.
 
   GET /api/types
 
 Response:
-  { "types": ["factory", "wallet", "dex", "..."] }
+  { "types": ["factory", "wallet", "dex", "..."], "colors": { "factory": "#ff79c6", "wallet": "#50fa7b" } }
 
 ### GET /api/chains
 
