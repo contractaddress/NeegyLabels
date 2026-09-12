@@ -9,7 +9,7 @@ const labels = lookupLabels({ type, limit: 10000 });
 ---
 
 <Base title={`Type / ${type}`}>
-  <h1>/type/<span class="badge" data-type={type}>{type}</span></h1>
+  <h1>/type/{type}</h1>
 
   <div class="section-header">
     <span class="text-muted">{labels.length} {labels.length === 1 ? 'label' : 'labels'}</span>
