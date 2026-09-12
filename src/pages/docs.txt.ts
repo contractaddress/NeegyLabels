@@ -133,7 +133,7 @@ Response:
 
 ## Default Chains
 
-ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain hyperliquid bitcoin tron *
+ethereum robinhood base bsc arbitrum optimism polygon avalanche unichain hyperliquid bitcoin solana tron *
 
 ## Default Types
 
