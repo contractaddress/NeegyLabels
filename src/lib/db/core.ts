@@ -41,6 +41,7 @@ const DEFAULT_CHAINS = [
   ['optimism', '#ff0420', 'https://optimistic.etherscan.io'],
   ['polygon', '#8247e5', 'https://polygonscan.com'],
   ['robinhood', '#00c805', 'https://rh-scan.com'],
+  ['solana', '#14f195', 'https://solscan.io'],
   ['tron', '#eb0029', 'https://tronscan.org/#'],
   ['unichain', '#ff007a', 'https://uniscan.xyz'],
 ] as const;
