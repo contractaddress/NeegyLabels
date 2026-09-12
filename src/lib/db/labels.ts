@@ -3,12 +3,17 @@ import type { Label, LabelInput, LabelUpdate } from '../types.ts';
 
 const DANGEROUS_ADDR_CHARS = /['"<>`\x00-\x1f\x7f]/;
 
-function normalizeAddress(address: string): string {
-  const a = address.toLowerCase();
-  if (DANGEROUS_ADDR_CHARS.test(a)) {
+function cleanAddress(address: string): string {
+  const cleaned = address.trim();
+  if (DANGEROUS_ADDR_CHARS.test(cleaned)) {
     throw new Error('Invalid address: contains disallowed characters');
   }
-  return a;
+  return cleaned;
+}
+
+function normalizeAddress(address: string, chain: string): string {
+  const cleaned = cleanAddress(address);
+  return chain.trim().toLowerCase() === 'solana' ? cleaned : cleaned.toLowerCase();
 }
 
 export function lookupLabels(params: {
@@ -23,7 +28,14 @@ export function lookupLabels(params: {
   const conditions: string[] = [];
   const values: (string | number)[] = [];
 
-  if (params.address) { conditions.push('address = ?'); values.push(params.address.toLowerCase()); }
+  if (params.address && params.chain) {
+    conditions.push('address = ? COLLATE BINARY');
+    values.push(normalizeAddress(params.address, params.chain));
+  } else if (params.address) {
+    const address = cleanAddress(params.address);
+    conditions.push("((LOWER(TRIM(chain)) = 'solana' AND address = ? COLLATE BINARY) OR (LOWER(TRIM(chain)) <> 'solana' AND address = ? COLLATE BINARY))");
+    values.push(address, address.toLowerCase());
+  }
   if (params.chain)   { conditions.push('chain = ?');   values.push(params.chain); }
   if (params.type)    { conditions.push('type = ?');    values.push(params.type); }
   if (params.label)   { conditions.push('label LIKE ?'); values.push(`%${params.label}%`); }
@@ -38,12 +50,16 @@ export function lookupLabels(params: {
 
 export function lookupByAddress(address: string): Label[] {
   const d = getDb();
-  return d.prepare('SELECT * FROM labels WHERE address = ? ORDER BY chain').all(address.toLowerCase()) as Label[];
+  const cleaned = cleanAddress(address);
+  return d.prepare(`SELECT * FROM labels
+    WHERE (LOWER(TRIM(chain)) = 'solana' AND address = ? COLLATE BINARY)
+       OR (LOWER(TRIM(chain)) <> 'solana' AND address = ? COLLATE BINARY)
+    ORDER BY chain`).all(cleaned, cleaned.toLowerCase()) as Label[];
 }
 
 export function insertLabel(input: LabelInput): Label {
   const d = getDb();
-  const address = normalizeAddress(input.address);
+  const address = normalizeAddress(input.address, input.chain);
   d.prepare(
     `INSERT OR REPLACE INTO labels (address, chain, label, type, source, confidence, added_at)
      VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`,
@@ -53,7 +69,7 @@ export function insertLabel(input: LabelInput): Label {
 
 export function deleteLabel(address: string, chain: string): boolean {
   const d = getDb();
-  const result = d.prepare('DELETE FROM labels WHERE address = ? AND chain = ?').run(address.toLowerCase(), chain);
+  const result = d.prepare('DELETE FROM labels WHERE address = ? COLLATE BINARY AND chain = ?').run(normalizeAddress(address, chain), chain);
   return result.changes > 0;
 }
 
@@ -68,8 +84,8 @@ export function updateLabel(address: string, chain: string, fields: LabelUpdate)
   if (fields.confidence !== undefined) { sets.push('confidence = ?'); values.push(fields.confidence); }
 
   if (sets.length === 0) return false;
-  values.push(address.toLowerCase(), chain);
-  return d.prepare(`UPDATE labels SET ${sets.join(', ')} WHERE address = ? AND chain = ?`).run(...values).changes > 0;
+  values.push(normalizeAddress(address, chain), chain);
+  return d.prepare(`UPDATE labels SET ${sets.join(', ')} WHERE address = ? COLLATE BINARY AND chain = ?`).run(...values).changes > 0;
 }
 
 export function getDistinctChains(): string[] {

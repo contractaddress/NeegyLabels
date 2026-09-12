@@ -47,60 +47,89 @@ const DEFAULT_CHAINS = [
 
 let db: Database.Database | null = null;
 
+function createLabelsTable(database: Database.Database, table: string): void {
+  database.exec(`CREATE TABLE IF NOT EXISTS ${table} (
+    address TEXT NOT NULL,
+    chain TEXT NOT NULL,
+    label TEXT NOT NULL,
+    type TEXT DEFAULT 'unknown',
+    source TEXT DEFAULT 'manual',
+    confidence INTEGER DEFAULT NULL,
+    added_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (address, chain)
+  )`);
+}
+
+function migrateLabelsAddressCollation(database: Database.Database): void {
+  const row = database.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'labels'").get() as { sql: string };
+  if (!/address\s+COLLATE\s+NOCASE/i.test(row.sql)) return;
+
+  database.transaction(() => {
+    database.exec('DROP TABLE IF EXISTS labels_binary');
+    createLabelsTable(database, 'labels_binary');
+    const before = (database.prepare('SELECT COUNT(*) AS count FROM labels').get() as { count: number }).count;
+    database.exec(`INSERT INTO labels_binary (address, chain, label, type, source, confidence, added_at)
+      SELECT CASE WHEN LOWER(TRIM(chain)) = 'solana' THEN address ELSE LOWER(address) END,
+        chain, label, type, source, confidence, added_at FROM labels`);
+    const after = (database.prepare('SELECT COUNT(*) AS count FROM labels_binary').get() as { count: number }).count;
+    if (before !== after) throw new Error(`labels migration count mismatch: ${before} != ${after}`);
+    database.exec('DROP TABLE labels');
+    database.exec('ALTER TABLE labels_binary RENAME TO labels');
+  })();
+}
+
 export function getDb(): Database.Database {
-  if (!db) {
-    db = new Database(DB_PATH);
-    db.pragma('journal_mode = WAL');
-    db.pragma('foreign_keys = ON');
-    db.exec(`CREATE TABLE IF NOT EXISTS labels (
-      address TEXT NOT NULL,
-      chain TEXT NOT NULL,
-      label TEXT NOT NULL,
-      type TEXT DEFAULT 'unknown',
-      source TEXT DEFAULT 'manual',
-      confidence INTEGER DEFAULT NULL,
-      added_at TEXT DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (address COLLATE NOCASE, chain)
-    )`);
-    try { db.exec(`ALTER TABLE labels ADD COLUMN confidence INTEGER DEFAULT NULL`); } catch {}
-    db.exec(`CREATE TABLE IF NOT EXISTS api_tokens (
+  if (db) return db;
+
+  const database = new Database(DB_PATH);
+  try {
+    database.pragma('journal_mode = WAL');
+    database.pragma('foreign_keys = ON');
+    createLabelsTable(database, 'labels');
+    try { database.exec(`ALTER TABLE labels ADD COLUMN confidence INTEGER DEFAULT NULL`); } catch {}
+    migrateLabelsAddressCollation(database);
+    database.exec(`CREATE TABLE IF NOT EXISTS api_tokens (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       hash TEXT NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       last_used_at TEXT
     )`);
-    db.exec(`CREATE TABLE IF NOT EXISTS types (
+    database.exec(`CREATE TABLE IF NOT EXISTS types (
       name TEXT PRIMARY KEY COLLATE NOCASE,
       color TEXT NOT NULL,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`);
-    const seedType = db.prepare('INSERT OR IGNORE INTO types (name, color) VALUES (?, ?)');
-    db.transaction(() => {
+    const seedType = database.prepare('INSERT OR IGNORE INTO types (name, color) VALUES (?, ?)');
+    database.transaction(() => {
       for (const [name, color] of DEFAULT_TYPES) seedType.run(name, color);
     })();
-    db.exec(`CREATE TABLE IF NOT EXISTS chains (
+    database.exec(`CREATE TABLE IF NOT EXISTS chains (
       name TEXT PRIMARY KEY COLLATE NOCASE,
       color TEXT NOT NULL,
       explorer_base_url TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )`);
-    const chainColumns = db.pragma('table_info(chains)') as { name: string }[];
+    const chainColumns = database.pragma('table_info(chains)') as { name: string }[];
     if (!chainColumns.some(({ name }) => name === 'explorer_base_url')) {
-      db.exec('ALTER TABLE chains ADD COLUMN explorer_base_url TEXT');
+      database.exec('ALTER TABLE chains ADD COLUMN explorer_base_url TEXT');
     }
-    const seedChain = db.prepare('INSERT OR IGNORE INTO chains (name, color, explorer_base_url) VALUES (?, ?, ?)');
-    const seedExplorer = db.prepare('UPDATE chains SET explorer_base_url = ? WHERE name = ? AND explorer_base_url IS NULL');
-    db.transaction(() => {
+    const seedChain = database.prepare('INSERT OR IGNORE INTO chains (name, color, explorer_base_url) VALUES (?, ?, ?)');
+    const seedExplorer = database.prepare('UPDATE chains SET explorer_base_url = ? WHERE name = ? AND explorer_base_url IS NULL');
+    database.transaction(() => {
       for (const [name, color, explorerBaseUrl] of DEFAULT_CHAINS) {
         seedChain.run(name, color, explorerBaseUrl);
         if (explorerBaseUrl) seedExplorer.run(explorerBaseUrl, name);
       }
-      const existingChains = db.prepare('SELECT DISTINCT chain FROM labels').all() as { chain: string }[];
+      const existingChains = database.prepare('SELECT DISTINCT chain FROM labels').all() as { chain: string }[];
       for (const { chain } of existingChains) {
         if (/^(?:\*|[a-z0-9][a-z0-9_-]{0,49})$/.test(chain)) seedChain.run(chain, '#5c5c5c', null);
       }
     })();
+    db = database;
+    return database;
+  } catch (error) {
+    database.close();
+    throw error;
   }
-  return db;
 }
