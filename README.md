@@ -19,8 +19,9 @@ git clone https://github.com/contractaddress/NeegyLabels.git && cd NeegyLabels
 # generate a session secret into .env
 echo "API_KEY=$(openssl rand -hex 32)" > .env
 ```
+> **Note:** `API_KEY` is optional but recommended. If you skip it, the app auto-generates a random session secret (stored in `src/data/.session-secret`).
 
-Start the dev server
+install deps & start the dev server.
 ```
 npm install
 npx astro dev
@@ -30,7 +31,6 @@ Open `http://localhost:4321`.
 
 On first visit you'll be prompted to create an admin account. The admin panel (`/admin`) is where you generate API tokens.
 
-> **Note:** `API_KEY` is optional but recommended. If you skip it, the app auto-generates a random session secret (stored in `src/data/.session-secret`).
 
 ### Backing up the database
 
@@ -48,9 +48,9 @@ Or stop the server and copy `src/data/labels.db` directly. The `-wal` / `-shm` s
 Two ways to authenticate against the API:
 
 1. **`API_KEY` directly** — use the `.env` value as a Bearer token (handy for your own scripts). Only available when `API_KEY` is set.
-2. **`n33gy...` tokens** — generated in the admin panel (`/admin`), stored as SHA-256 hashes. Use these for other tools/consumers, such as your agents, so you can revoke them individually.
+2. **`n33gy...` tokens** generated in the admin panel (`/admin`), stored as SHA-256 hashes. Use these for other tools/consumers, such as your agents, so you can revoke them individually.
 
-> Note: currently querying with GET does not require a Bearer for convinience.
+> Note: currently querying with GET does not require a Bearer for convinience, i probably won't change this as i do not expose my DB to the web, you can easily ask your agent to modify this.
 
 ```bash
 # Either works:
@@ -60,13 +60,10 @@ curl -H "Authorization: Bearer n33gy<id>_<secret>" http://localhost:4321/api/lab
 
 ## API
 
-See `/docs` in the web UI, or fetch the raw markdown:
+See `/docs` in the web UI, or in this repo at: [docs/API.md](./docs/API.md)
 
-```bash
-curl http://localhost:4321/docs.txt
-```
 
-### Quick reference
+#### Quick reference
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
